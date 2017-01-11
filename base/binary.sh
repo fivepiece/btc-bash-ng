@@ -5,18 +5,18 @@
 # printf '%s' STR | bin2bytes : " byte byte..."
 # bin2bytes <<<"STR" : " byte byte... 0a"
 # bin2bytes FILE : " byte byte..."
-#alias bin2bytes="od -t x1 -An -v -w1"
+alias bin2bytes='od -t x1 -An -v -w1'
 
 # outputs any input in hex
 # prtinf '%s' STR | bin2hexstr : "HEX..."
 # bin2hex <<<"STR" : "HEX...0x0A"
 # bin2hex FILE : "HEX..."
-#alias bin2hex="hexdump -v -e '\"\" 1/1 \"%02X\" \"\"'"
+alias bin2hex="hexdump -v -e '\"\" 1/1 \"%02X\" \"\"'"
 
 # print the raw value of hexstr
 # echo HEX | hex2bin : BIN
 # hex2bin HEX : BIN
-hex2bin-2()
+hex2bin()
 {
     # if $1 is empty, read from stdin
     # TODO find a way to expand '<<<"$1"' somehow to re-use the loop
