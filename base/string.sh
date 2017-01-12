@@ -28,11 +28,11 @@ lpadhexstr()
 
 # reverse chunks of n words in hexstr
 # the length of hexstr must be a multiple of the chunk
-# setting a chunk size is only possible with $2 
+# setting a chunk size is only possible with $2
 # $1 : hexstr
 # $2 : n
-revchunks () 
-{ 
+revchunks ()
+{
     local -u hexstr
     local -i chunk
 
