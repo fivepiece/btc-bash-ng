@@ -31,7 +31,7 @@ test_number()
     local -a tests=( "test_int_floor" "test_int_ceil" )
     for testi in ${tests[@]}; do
         if ! ${testi}; then
-            printf '%s\n' "error: ${testi//test/}"
+            printf '%s\n' "error: ${testi//test_/}"
             return 1
         fi
     done

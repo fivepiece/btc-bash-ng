@@ -45,7 +45,7 @@ test_string()
     local -a tests=( "test_padhexstr" "test_revchunks" )
     for testi in ${tests[@]}; do
         if ! ${testi}; then
-            printf '%s\n' "error: ${testi//test/}"
+            printf '%s\n' "error: ${testi//test_/}"
             return 1
         fi
     done
