@@ -19,8 +19,8 @@ input_mkbitmap()
         printf -v brem "%0${rem}d" '0'
         srem="${sample:0:${#brem}}"
         bmp="${bmp:0:$((len-rem))}${srem}"
-    fi  
-    
+    fi
+
     printf '%s\n' "${bmp}"
 }
 
