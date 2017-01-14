@@ -46,15 +46,31 @@ test_int2octets()
 
 test_bits2octets()
 {
-    local -ua vectors
-    local -u tb20 vb2o
-    printf -v vectors[0]
+    local -u tb2o vb2o
+    local -u q=FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141
 
+    for bits in {1,10,101,1011,10101}; do
+        for i in {1..256}; do
+            read tb2o < <( bits2octets "$(input_mkbitmap ${bits} $i)" "$q" )
+            read vb2o < <( bc_clean <<<"obase=2; ibase=16; ${tb2o};" )
+            read vb2o < <( bits2int "${vb2o}" )
+            if (( $( bc_clean <<<"ibase=16; (${vb2o} != ${tb2o})") )); then
+                printf '%s != %s\n%s != %s\n' '${vb2o}' '${tb2o}' \
+                                              "${vb2o}" "${tb2o}"
+                return 1
+            fi
+            if (( ${#tb2o} != ${#q} )); then
+                printf '%s != %s\n%s != %s\n' '${#vb2o}' '${#tb2o}' \
+                                              "${#vb2o}" "${#tb2o}"
+                return 1
+            fi
+        done
+    done
 }
 
 test_int_convert()
 {
-    local -a tests=( "test_bits2int" "test_int2octets" )
+    local -a tests=( "test_bits2int" "test_int2octets" "test_bits2octets" )
     for testi in ${tests[@]}; do
         if ! ${testi}; then
             printf '%s\n' "error: ${testi//test_/}"
