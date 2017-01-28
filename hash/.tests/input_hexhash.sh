@@ -1,31 +1,34 @@
 #!/bin/bash
 
+# sha-2 tests  : https://tools.ietf.org/rfc/rfc6234.txt
+# rmd160 tests : http://homes.esat.kuleuven.be/~bosselae/ripemd160.html#Outline
+
 tests_arr()
 {
     tests_raw
 
     # disabled tests : test3
     btests_sha224=( ${test1} ${test2_1} ${test4} )
-    # disabled tests : "" test7_224 test9_224
+    # disabled tests : ${test5:-(empty string)} test7_224 test9_224
     htests_sha224=( 07 ${test8_224} ${test10_224} )
 
     # disabled tests : test3
     btests_sha256=( ${test1} ${test2_1} ${test4} )
-    # disabled tests : "" test7_256 test9_256
+    # disabled tests : ${test5:-(empty string)} test7_256 test9_256
     htests_sha256=( 19 ${test8_256} ${test10_256} )
 
     # disabled tests : test3
     btests_sha384=( ${test1} ${test2_2} ${test4} )
-    # disabled tests : "" test7_384 test9_384
+    # disabled tests : ${test5:-(empty string)} test7_384 test9_384
     htests_sha384=( B9 ${test8_384} ${test10_384} )
 
     # disabled tests : test3
     btests_sha512=( ${test1} ${test2_2} ${test4} )
-    # disabled tests : "" test7_512 test9_512
+    # disabled tests : ${test5:-(empty string)} test7_512 test9_512
     htests_sha512=( D0 ${test8_512} ${test10_512} )
 
-    # disabled tests : testr160_9
-    btests_rmd160=( ${testr160_1} ${testr160_2} ${testr160_3} ${testr160_4} ${testr160_5} ${testr160_6} ${testr160_7} ${testr160_8} )
+    # disabled tests : ${testr160_1:-(empty string)} testr160_9
+    btests_rmd160=( "${testr160_2}" "${testr160_3}" "${testr160_4}" "${testr160_5}" "${testr160_6}" "${testr160_7}" "${testr160_8}" )
     # disabled tests :
     # htests_rmd160=( )
 }
@@ -81,7 +84,7 @@ tests_ret()
         'C665BEFB36DA189D78822D10528CBF3B12B3EEF726039909C1A16A270D48719377966B957A878E720584779A62825C18DA26415E49A7176A894E7510FD1451F5' )
 
     ret_rmd160=( \
-        '9C1185A5C5E9FC54612808977EE8F548B2258D31' \
+        # '9C1185A5C5E9FC54612808977EE8F548B2258D31' \
         '0BDC9D2D256B3EE9DAAE347BE6F4DC835A467FFE' \
         '8EB208F7E05D987A9B044A8E98C6B087F15A0BFC' \
         '5D0689EF49D2FAE572B881B123A85FFA21595F36' \
@@ -128,19 +131,19 @@ tests_raw()
     test9_512="3addec85593216d1619aa02d9756970bfc70ace2744f7c6b2788151028f7b6a2550fd74a7e6e69c2c9b45fc454966dc31d2e10da1f95ce02beb4bf8765574cbd6e8337ef420adc98c15cb6d5e4a0241ba0046d250e510231cac2046c991606ab4ee4145bee2ff4bb123aab498d9d44794f99ccad89a9a1621259eda70a5b6dd4bdd87778c9043b9384f54906"
     test10_512="a55f20c411aad132807a502d65824e31a2305432aa3d06d3e282a8d84e0de1de6974bf495469fc7f338f8054d58c26c49360c3e87af56523acf6d89d03e56ff2f868002bc3e431edc44df2f0223d4bb3b243586e1a7d924936694fcbbaf88d9519e4eb50a644f8e4f95eb0ea95bc4465c8821aacd2fe15ab4981164bbb6dc32f969087a145b0d9cc9c67c22b763299419cc4128be9a077b3ace634064e6d99283513dc06e7515d0d73132e9a0dc6d3b1f8b246f1a98a3fc72941b1e3bb2098e8bf16f268d64f0b0f4707fe1ea1a1791ba2f3c0c758e5f551863a96c949ad47d7fb40d2"
     sha1_seed="d0569cb3665a8a43eb6ea23d75a3c4d2054a0d7d"
-    sha224_seed="d0569cb3665a8a43eb6ea23d75a3c4d2054a0d7d66a9ca99c9ceb027"
-    sha256_seed="f41ece2613e4573915696b5adcd51ca328be3bf566a9ca99c9ceb0279c1cb0a7"
-    sha384_seed="8240bc51e4ec7ef76d18e35204a19f51a5213a73a81d6f944680d3075948b7e463804ea3d26e13ea820d65a484be7453"
-    sha512_seed="473ff1b9b3ffdfa126699ac7ef9e8e787773095824c642557c1399d98e4220448dc35b99bfdd44779543924c1ce93bc5941538895db988261b00774b12272039"
+    # sha224_seed="d0569cb3665a8a43eb6ea23d75a3c4d2054a0d7d66a9ca99c9ceb027"
+    # sha256_seed="f41ece2613e4573915696b5adcd51ca328be3bf566a9ca99c9ceb0279c1cb0a7"
+    # sha384_seed="8240bc51e4ec7ef76d18e35204a19f51a5213a73a81d6f944680d3075948b7e463804ea3d26e13ea820d65a484be7453"
+    # sha512_seed="473ff1b9b3ffdfa126699ac7ef9e8e787773095824c642557c1399d98e4220448dc35b99bfdd44779543924c1ce93bc5941538895db988261b00774b12272039"
 
     testr160_1=''
     testr160_2="${test3}"
     testr160_3="${test1}"
-    testr160_4="message digest"
+    testr160_4="message_digest"
     testr160_5="abcdefghijklmnopqrstuvwxyz"
     testr160_6="${test2_1}"
     testr160_7="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-    testr160_8="1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"
+    testr160_8="12345678901234567890123456789012345678901234567890123456789012345678901234567890"
     testr160_9="a" # 1000000 times
 }
 

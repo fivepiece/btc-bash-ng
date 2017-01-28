@@ -28,6 +28,13 @@ test_sha512()
 
 test_ripemd160()
 {
+    local tval emptyhash='9C1185A5C5E9FC54612808977EE8F548B2258D31'
+    read tval < <( printf "" | ripemd160 )
+    if [[ "${tval}" != "${emptyhash}" ]]; then
+        printf '%s != %s\n%s != %s\n' "\${tval}" "\${emptyhash}" \
+            "${tval}" "${emptyhash}"
+        return 1
+    fi
     test_hashfunc ripemd160 "${btests_rmd160[*]}" "${htests_rmd160[*]}" "${ret_rmd160[*]}"
     return $?
 }
@@ -41,7 +48,7 @@ test_hashfunc()
     # hash binary
     local -i i
     for (( i=0; i<${#bintests[@]}; i++)); do
-        read tval < <( printf "${bintests[$i]}" | bin2hex | ${hashfunc} )
+        read tval < <( printf "${bintests[$i]//_/ }" | bin2hex | ${hashfunc} )
         if [[ "${tval}" != "${retvals[$i]}" ]]; then
             printf '%s != %s\n%s != %s\n' "\${bintests[$i]}" "\${ret_${hashfunc}[$i]}" \
                 "${tval}" "${retvals[$i]}"
@@ -71,4 +78,3 @@ test_hexhash()
     done
 }
 test_hexhash || return 1
-#unset test1 test10_256 test2_1 test2_2b test4a test7_224 test7_512 test8_256 test9_1 test9_384 test10_1 test10_384 test2_2 test3 test4b test7_256 test8_1 test8_384 test9_224 test9_512 test10_224 test10_512 test2_2a test4 test7_1 test7_384 test8_224 test8_512 test9_256
