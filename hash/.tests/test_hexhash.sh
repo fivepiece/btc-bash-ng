@@ -39,6 +39,18 @@ test_ripemd160()
     return $?
 }
 
+test_hash160()
+{
+    test_hashfunc hash160 "${btests_hash160[*]}" "${htests_hash160[*]}" "${ret_hash160[*]}"
+    return $?
+}
+
+test_hash256()
+{
+    test_hashfunc hash256 "${btests_hash256[*]}" "${htests_hash256[*]}" "${ret_hash256[*]}"
+    return $?
+}
+
 test_hashfunc()
 {
     local -i flag=0
@@ -69,7 +81,7 @@ test_hashfunc()
 
 test_hexhash()
 {
-    local -a tests=( test_sha224 test_sha256 test_sha384 test_sha512 test_ripemd160 )
+    local -a tests=( test_sha224 test_sha256 test_sha384 test_sha512 test_ripemd160 test_hash160 test_hash256 )
     for testi in ${tests[@]}; do
         if ! ${testi}; then
             printf '%s\n' "error: ${testi//test_/}"
