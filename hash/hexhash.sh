@@ -52,9 +52,9 @@ ripemd160()
 {
     local -u digest
     if [[ -z "$1" ]]; then
-        read -N40 digest < <( hex2bin </proc/self/fd/0 | openssl rmd160 )
+        read -N40 digest < <( hex2bin </proc/self/fd/0 | openssl rmd160 -r )
     else
-        read -N40 digest < <( hex2bin "$1" | openssl -rmd160 )
+        read -N40 digest < <( hex2bin "$1" | openssl rmd160 -r )
     fi
     printf '%s\n' "${digest}"
 }
