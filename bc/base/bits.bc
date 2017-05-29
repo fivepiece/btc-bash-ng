@@ -1,0 +1,54 @@
+#!/usr/bin/bc
+
+# functions to handle numbers as bits or words
+
+
+# returns the number of words (4 bits) in a number
+define wordlen(n){
+
+    auto num, ans, i;
+    ans = -1;
+    i = -1;
+
+    if ( n == 0 ){
+        return 1;
+    }
+
+    num = n;
+
+    if ( n < 0 ){
+        num = (num * -1);
+    }
+
+    while (ans <= 0){
+        i=i+1;
+        ans=( (10^i)-(num) );
+    }
+
+    return i;
+}
+
+# accepts a number and named array
+# ret[0] = array length
+# bits are placed in ret[1..n] where LSB is at ret[1] and so on
+define void num2bitarr(n, *ret[]){
+
+    auto ibit;
+
+    ibit = 0;
+
+    if ( n == 0 ){
+        ret[0] = 1;
+        ret[1] = 0;
+        return;
+    }
+
+    while ( n > 0 ){
+
+        ret[ibit+1] = ( n % 2 );
+        ibit = ibit+1;
+        n /= 2;
+    }
+
+    ret[0] = ibit;
+}

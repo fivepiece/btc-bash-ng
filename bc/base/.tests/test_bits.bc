@@ -1,0 +1,112 @@
+#!/usr/bin/bc
+
+define testwordlen(){
+
+    auto bool;
+    print "Test wordlen()\n";
+    bool = 1;
+
+    bool *= ( wordlen(0) == 1 );
+    bool *= ( wordlen(00) == 1 );
+    bool *= ( wordlen(1) == 1 );
+    bool *= ( wordlen(A) == 1 );
+    bool *= ( wordlen(10) == 2);
+    bool *= ( wordlen(99) == 2);
+    bool *= ( wordlen(100) == 3);
+    bool *= ( wordlen(FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) == 40 );
+    bool *= ( wordlen(10000000000000000000000000000000000000000000000000000000000000000) == 41 );
+
+    return ( bool == 1 );
+}
+
+define testnum2bitarr(){
+
+    auto ret[], arr_1000[], arr_dead[], arr_beef[], arr_cafe[], bool, i, o;
+
+    arr_1000[0] = D;
+    arr_1000[1] = 1; arr_1000[2] = 0; arr_1000[3] = 0; arr_1000[4] = 0;
+    arr_1000[5] = 0; arr_1000[6] = 0; arr_1000[7] = 0; arr_1000[8] = 0;
+    arr_1000[9] = 0; arr_1000[A] = 0; arr_1000[B] = 0; arr_1000[C] = 0;
+    arr_1000[D] = 0;
+
+    arr_dead[0] = 10;
+    arr_dead[1] = 1; arr_dead[2] = 1; arr_dead[3] = 0; arr_dead[4] = 1;
+    arr_dead[5] = 1; arr_dead[6] = 1; arr_dead[7] = 1; arr_dead[8] = 0;
+    arr_dead[9] = 1; arr_dead[A] = 0; arr_dead[B] = 1; arr_dead[C] = 0;
+    arr_dead[D] = 1; arr_dead[E] = 1; arr_dead[F] = 0; arr_dead[10] = 1;
+
+    arr_beef[0] = 10;
+    arr_beef[1] = 1; arr_beef[2] = 0; arr_beef[3] = 1; arr_beef[4] = 1;
+    arr_beef[5] = 1; arr_beef[6] = 1; arr_beef[7] = 1; arr_beef[8] = 0;
+    arr_beef[9] = 1; arr_beef[A] = 1; arr_beef[B] = 1; arr_beef[C] = 0;
+    arr_beef[D] = 1; arr_beef[E] = 1; arr_beef[F] = 1; arr_beef[10] = 1;
+
+    arr_cafe[0] = 10;
+    arr_cafe[1] = 1; arr_cafe[2] = 1; arr_cafe[3] = 0; arr_cafe[4] = 0;
+    arr_cafe[5] = 1; arr_cafe[6] = 0; arr_cafe[7] = 1; arr_cafe[8] = 0;
+    arr_cafe[9] = 1; arr_cafe[A] = 1; arr_cafe[B] = 1; arr_cafe[C] = 1;
+    arr_cafe[D] = 1; arr_cafe[E] = 1; arr_cafe[F] = 1; arr_cafe[10] = 0;
+
+    print "Test num2bitarr()\n";
+    bool = 1;
+
+    num2bitarr(0, ret[]);
+    bool *= ( ret[0] == 1 );
+    bool *= ( ret[1] == 0 );
+
+    num2bitarr(1, ret[]);
+    bool *= ( ret[0] == 1 );
+    bool *= ( ret[1] == 1 );
+
+    o = 1;
+    bool = 1;
+    num2bitarr(1000, ret[]);
+    for ( i=(ret[0]); i>0; i-- ){
+        #print "ret[", i, "] == ", ret[i], "\n", "arr_1000[", o, "] == ", arr_1000[o], "\n", "bool = ", bool, "\n" 
+        bool *= ( ret[i] == arr_1000[o] );
+        o += 1;
+    }
+    for (i=ret[0]; i>0; i--) { print ret[i]; }; print "\n"
+    for (i=1; i<=arr_1000[0]; i++) { print arr_1000[i]; }; print "\n"
+
+    o = 1;
+    num2bitarr(DEAD, ret[]);
+    for ( i=(ret[0]); i>0; i-- ){
+        bool *= ( ret[i] == arr_dead[o] );
+        o += 1;
+    }
+    for (i=ret[0]; i>0; i--) { print ret[i]; }; print "\n"
+    for (i=1; i<=arr_dead[0]; i++) { print arr_dead[i]; }; print "\n"
+
+    o = 1;
+    num2bitarr(BEEF, ret[]);
+    for ( i=(ret[0]); i>0; i-- ){
+        bool *= ( ret[i] == arr_beef[o] );
+        o += 1;
+    }
+    for (i=ret[0]; i>0; i--) { print ret[i]; }; print "\n"
+    for (i=1; i<=arr_beef[0]; i++) { print arr_beef[i]; }; print "\n"
+
+    o = 1;
+    num2bitarr(CAFE, ret[]);
+    for ( i=(ret[0]); i>0; i-- ){
+        bool *= ( ret[i] == arr_cafe[o] );
+        o += 1;
+    }
+    for (i=ret[0]; i>0; i--) { print ret[i]; }; print "\n"
+    for (i=1; i<=arr_cafe[0]; i++) { print arr_cafe[i]; }; print "\n"
+
+    return ( bool == 1 );
+}
+
+define test_bits_bc(){
+
+    auto bool;
+    bool = 1;
+    bool *= testwordlen();
+    bool *= testnum2bitarr();
+
+    return bool;
+}
+
+test_bits_bc()
