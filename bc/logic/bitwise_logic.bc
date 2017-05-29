@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bc
 
 # bitwise logic functions
 
@@ -10,7 +10,7 @@ define void bwand_api(*arra[], *arrb[], *ret[]){
 
     for ( i=1; i<=ret[0]; i++ ){
 
-        ret[i] = arra[i] && arrb[i];
+        ret[i] = ( arra[i] && arrb[i] );
     }
 }
 
@@ -35,7 +35,7 @@ define void bwor_api(*arra[], *arrb[], *ret[]){
 
     for ( i=1; i<=ret[0]; i++ ){
 
-        ret[i] = arra[i] || arrb[i];
+        ret[i] = ( arra[i] || arrb[i] );
     }
 }
 

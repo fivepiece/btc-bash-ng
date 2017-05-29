@@ -1,0 +1,61 @@
+#!/usr/bin/bc
+
+define void arit_lshift_api(t, n, e, *ret[]){
+
+    num2bitarr((n * (2^e)), ret[]);
+    ret[0] = t;
+}
+
+define arit_lshift(t, n, e){
+
+    auto ret[];
+    arit_lshift_api(t, n, e, ret[]);
+    return bitarr2num(ret[]);
+}
+
+define void log_rshift_api(t, n, e, *ret[]){
+
+    num2bitarr((n / (2^e)), ret[]);
+    ret[0] = t;
+}
+
+define log_rshift(t, n, e){
+
+    auto ret[];
+    log_rshift_api(t, n, e, ret[]);
+    return bitarr2num(ret[]);
+}
+
+define void bwrol_api(t, n, e, *ret[]){
+
+    auto tarr1[], tarr2[];
+
+    arit_lshift_api(t, n, e, tarr1[]);
+    log_rshift_api(t, n, (t-e), tarr2[]);
+
+    bwor_api(tarr1[], tarr2[], ret[]);
+}
+
+define bwrol(t, n, e){
+
+    auto ret[];
+    bwrol_api(t, n, e, ret[]);
+    return bitarr2num(ret[]);
+}
+
+define void bwror_api(t, n, e, *ret[]){
+
+    auto tarr1[], tarr2[];
+
+    log_rshift_api(t, n, e, tarr1[]);
+    arit_lshift_api(t, n, (t-e), tarr2[]);
+
+    bwor_api(tarr1[], tarr2[], ret[]);
+}
+
+define bwror(t, n, e){
+
+    auto ret[];
+    bwror_api(t, n, e, ret[]);
+    return bitarr2num(ret[]);
+}
