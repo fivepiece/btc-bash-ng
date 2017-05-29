@@ -1,0 +1,89 @@
+#!/bin/bash
+
+# bitwise logic functions
+
+define void bwand_api(arra[], arrb[], ret[]){
+
+    auto ret[], arra[], arrb[], end, res, i;
+
+    # num2bitarr(a, arra[]);
+    # num2bitarr(b, arrb[]);
+
+    # end = max(arra[0], arrb[0]);
+    ret[0] = max(arra[0], arrb[0]);
+
+    # for ( i=1; i<=end; i++ ){
+    for ( i=1; i<=ret[0]; i++ ){
+
+        ret[i] = arra[i] && arrb[i];
+        # res += 2^(i-1) * ( arra[i] && arrb[i] );
+    }
+    # return res;
+}
+
+define bwand(a, b){
+
+    auto arra[], arrb[], end, res, i;
+
+    num2bitarr(a, arra[]);
+    num2bitarr(b, arrb[]);
+
+    end = max(arra[0], arrb[0]);
+
+    for ( i=1; i<=end; i++ ){
+
+        res += 2^(i-1) * ( arra[i] && arrb[i] );
+    }
+    return res;
+}
+
+define bwor(a, b){
+
+    auto arra[], arrb[], end, res, i;
+
+    num2bitarr(a, arra[]);
+    num2bitarr(b, arrb[]);
+
+    end = max(arra[0], arrb[0]);
+
+    for ( i=1; i<=end; i++ ){
+
+        res += 2^(i-1) * ( arra[i] || arrb[i] );
+    }
+    return res;
+}
+
+define bwxor(a, b){
+
+    auto arra[], arrb[], end, res, i;
+
+    num2bitarr(a, arra[]);
+    num2bitarr(b, arrb[]);
+
+    end = max(arra[0], arrb[0]);
+
+    for ( i=1; i<=end; i++ ){
+
+        res += 2^(i-1) * (( arra[i] || arrb[i] ) && !( arra[i] && arrb[i] ));
+    }
+    return res;
+}
+
+define bwnot(a){
+
+    auto ret[], res, i;
+
+    num2bitarr(a, ret[]);
+    if ( ret[0] == -1 ) { ret[0] = 1 };
+    for ( i=1; i<=(ret[0]); i++ ){
+
+        res += 2^(i-1) * ( ! ret[i] );
+    }
+    return res;
+}
+
+define bwnand(a, b){ return bwnot(bwand(a, b)) }
+
+define bwnor(a, b){ return bwnot(bwor(a, b)) }
+
+define bwxnor(a, b){ return bwnot(bwxor(a, b)) }
