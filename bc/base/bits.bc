@@ -52,3 +52,16 @@ define void num2bitarr(n, *ret[]){
 
     ret[0] = ibit;
 }
+
+# accepts an array such as the output from num2bitarr()
+# returns the number converted back from it
+define bitarr2num(*ret[]){
+
+    auto res;
+
+    for ( i=1; i<=ret[0]; i++ ){
+        res += 2^(i-1) * ret[i];
+    }
+
+    return res;
+}

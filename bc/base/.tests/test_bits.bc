@@ -16,7 +16,7 @@ define testwordlen(){
     bool *= ( wordlen(FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF) == 40 );
     bool *= ( wordlen(10000000000000000000000000000000000000000000000000000000000000000) == 41 );
 
-    return ( bool == 1 );
+    return bool;
 }
 
 define testnum2bitarr(){
@@ -99,12 +99,38 @@ define testnum2bitarr(){
     return ( bool == 1 );
 }
 
+define testbitarr2num(){
+
+    auto num, ret[], bool;
+
+    print "Test bitarr2num()\n";
+    bool = 1;
+
+    num2bitarr(0, ret[])
+    bool *= ( bitarr2num(ret[]) == 0 )
+
+    num2bitarr(1, ret[])
+    bool *= ( bitarr2num(ret[]) == 1 )
+
+    num2bitarr(55555, ret[])
+    bool *= ( bitarr2num(ret[]) == 55555 )
+
+    num2bitarr(AAAAAAAAAA, ret[])
+    bool *= ( bitarr2num(ret[]) == AAAAAAAAAA )
+
+    num2bitarr(010101, ret[])
+    bool *= ( bitarr2num(ret[]) == 010101 )
+
+    return bool;
+}
+
 define test_bits_bc(){
 
     auto bool;
     bool = 1;
     bool *= testwordlen();
     bool *= testnum2bitarr();
+    bool *= testbitarr2num();
 
     return bool;
 }
