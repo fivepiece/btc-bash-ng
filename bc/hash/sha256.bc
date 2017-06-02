@@ -79,3 +79,6 @@ define void set_round_const(*ret[]){
     ret[3E] = BEF9A3F7;
     ret[3F] = C67178F2;
 }
+
+# delaying development for now.
+# https://github.com/fivepiece/bc_segfault
