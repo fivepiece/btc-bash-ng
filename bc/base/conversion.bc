@@ -65,3 +65,51 @@ define bitarr2num(*ret[]){
 
     return res;
 }
+
+# accepts a number, a base to convert to and an array to place
+# the converted number
+# ret[0] = array length
+# numbers are placed in ret[1..n] where LSB is at cvrt[1] and so on
+define void base_convert_api(n, b, *cvrt[]){
+
+    auto ibit;
+
+    ibit = 0;
+
+    if ( n == 0 ){
+        cvrt[0] = 1;
+        cvrt[1] = 0;
+        return;
+    }
+
+    while ( n > 0 ){
+
+        cvrt[ibit+1] = ( n % b );
+        ibit = ibit+1;
+        n /= b;
+    }
+
+    cvrt[0] = ibit;
+}
+
+# accepts a number and a base, returns the converted number
+# as its factors LSB is leftmost
+define void base_convert(n, b){
+
+    auto newbase[], i;
+    base_convert_api(n, b, newbase[])
+
+    for ( i=1; i<=newbase[0]; i++ ){
+        print newbase[i], " ";
+    }
+    print "\n";
+}
+
+define base_restore(*arr[], b){
+
+    auto res, i;
+    for ( i=1; i<=arr[0]; i++ ){
+        res += b^(i-1) * arr[i];
+    }
+    return res;
+}
