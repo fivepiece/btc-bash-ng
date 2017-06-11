@@ -124,7 +124,7 @@ define testbitarr2num(){
     return bool;
 }
 
-define test_bits_bc(){
+define test_conversion_bc(){
 
     auto bool;
     bool = 1;
@@ -137,4 +137,4 @@ define test_bits_bc(){
     return bool;
 }
 
-test_bits_bc()
+test_conversion_bc()

@@ -93,7 +93,7 @@ define bwnot(a){
 
     num2bitarr(a, arr[]);
 
-    bwor_api(arr[], ret[]);
+    bwnot_api(arr[], ret[]);
 
     return bitarr2num(ret[]);
 }
@@ -114,7 +114,7 @@ define bwnand(a, b){
 
     bwnand_api(arra[], arrb[], ret[]);
 
-    bitarr2num(ret[]);
+    return bitarr2num(ret[]);
 }
 
 define void bwnor_api(*arra[], *arrb[], *ret[]){
@@ -133,7 +133,7 @@ define bwnor(a, b){
 
     bwnor_api(arra[], arrb[], ret[]);
 
-    bitarr2num(ret[]);
+    return bitarr2num(ret[]);
 }
 
 define void bwxnor_api(*arra[], *arrb[], *ret[]){
@@ -152,5 +152,5 @@ define bwxnor(a, b){
 
     bwxnor_api(arra[], arrb[], ret[]);
 
-    bitarr2num(ret[]);
+    return bitarr2num(ret[]);
 }
