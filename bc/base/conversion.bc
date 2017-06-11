@@ -28,48 +28,10 @@ define wordlen(n){
     return i;
 }
 
-# accepts a number and named array
-# ret[0] = array length
-# bits are placed in ret[1..n] where LSB is at ret[1] and so on
-define void num2bitarr(n, *ret[]){
-
-    auto ibit;
-
-    ibit = 0;
-
-    if ( n == 0 ){
-        ret[0] = 1;
-        ret[1] = 0;
-        return;
-    }
-
-    while ( n > 0 ){
-
-        ret[ibit+1] = ( n % 2 );
-        ibit = ibit+1;
-        n /= 2;
-    }
-
-    ret[0] = ibit;
-}
-
-# accepts an array such as the output from num2bitarr()
-# returns the number converted back from it
-define bitarr2num(*ret[]){
-
-    auto res;
-
-    for ( i=1; i<=ret[0]; i++ ){
-        res += 2^(i-1) * ret[i];
-    }
-
-    return res;
-}
-
 # accepts a number, a base to convert to and an array to place
 # the converted number
-# ret[0] = array length
-# numbers are placed in ret[1..n] where LSB is at cvrt[1] and so on
+# cvrt[0] = array length
+# numbers are placed in cvrt[1..n] where LSB is at cvrt[1] and so on
 define void base_convert_api(n, b, *cvrt[]){
 
     auto ibit;
@@ -92,12 +54,12 @@ define void base_convert_api(n, b, *cvrt[]){
     cvrt[0] = ibit;
 }
 
-# accepts a number and a base, returns the converted number
+# accepts a number and a base, prints the converted number
 # as its factors LSB is leftmost
 define void base_convert(n, b){
 
     auto newbase[], i;
-    base_convert_api(n, b, newbase[])
+    base_convert_api(n, b, newbase[]);
 
     for ( i=1; i<=newbase[0]; i++ ){
         print newbase[i], " ";
@@ -105,11 +67,28 @@ define void base_convert(n, b){
     print "\n";
 }
 
-define base_restore(*arr[], b){
+# accepts an array containing a base-converted number
+# returns the number in obase
+define base_restore(b, *arr[]){
 
     auto res, i;
     for ( i=1; i<=arr[0]; i++ ){
         res += b^(i-1) * arr[i];
     }
     return res;
+}
+
+# accepts a number and named array
+# ret[0] = array length
+# bits are placed in ret[1..n] where LSB is at ret[1] and so on
+define void num2bitarr(n, *ret[]){
+
+    base_convert_api(n, 2, ret[]);
+}
+
+# accepts an array such as the output from num2bitarr()
+# returns the number converted back from it
+define bitarr2num(*ret[]){
+
+    return base_restore(2, ret[]);
 }
