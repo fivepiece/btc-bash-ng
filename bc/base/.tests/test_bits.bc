@@ -129,7 +129,9 @@ define test_bits_bc(){
     auto bool;
     bool = 1;
     bool *= testwordlen();
+    bool;
     bool *= testnum2bitarr();
+    bool;
     bool *= testbitarr2num();
 
     return bool;
