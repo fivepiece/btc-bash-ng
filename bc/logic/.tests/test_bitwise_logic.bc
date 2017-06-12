@@ -1,0 +1,122 @@
+#!/use/bin/bc
+
+define testbwand(){
+
+    auto bool;
+    bool = 1;
+    print "Test bwnad()\n";
+
+    bool *= ( bwand(0, 0) == 0 );
+    bool *= ( bwand(1, 0) == 0 );
+    bool *= ( bwand(0, 1) == 0 );
+    bool *= ( bwand(1, 1) == 1 );
+
+    return bool;
+}
+
+define testbwor(){
+
+    auto bool;
+    bool = 1;
+    print "Test bwor()\n";
+
+    bool *= ( bwor(0, 0) == 0 );
+    bool *= ( bwor(1, 0) == 1 );
+    bool *= ( bwor(0, 1) == 1 );
+    bool *= ( bwor(1, 1) == 1 );
+
+    return bool;
+}
+
+define testbwxor(){
+
+    auto bool;
+    bool = 1;
+    print "Test bwxor()\n";
+
+    bool *= ( bwxor(0, 0) == 0 );
+    bool *= ( bwxor(1, 0) == 1 );
+    bool *= ( bwxor(0, 1) == 1 );
+    bool *= ( bwxor(1, 1) == 0 );
+
+    return bool;
+}
+
+define testbwnot(){
+
+    auto bool;
+    bool = 1;
+    print "Test bwnot()\n";
+
+    bool *= ( bwnot(0) == 1 );
+    bool *= ( bwnot(1) == 0 );
+
+    return bool;
+}
+
+define testbwnand(){
+
+    auto bool;
+    bool = 1;
+    print "Test bwnand()\n";
+
+    bool *= ( bwnand(0, 0) == 1 );
+    bool *= ( bwnand(1, 0) == 1 );
+    bool *= ( bwnand(0, 1) == 1 );
+    bool *= ( bwnand(1, 1) == 0 );
+
+    return bool;
+}
+
+define testbwnor(){
+
+    auto bool;
+    bool = 1;
+    print "Test bwnor()\n";
+
+    bool *= ( bwnor(0, 0) == 1 );
+    bool *= ( bwnor(1, 0) == 0 );
+    bool *= ( bwnor(0, 1) == 0 );
+    bool *= ( bwnor(1, 1) == 0 );
+
+    return bool;
+}
+
+define testbwxnor(){
+
+    auto bool;
+    bool = 1;
+    print "Test bwxnor()\n";
+
+    bool *= ( bwxnor(0, 0) == 1 );
+    bool *= ( bwxnor(1, 0) == 0 );
+    bool *= ( bwxnor(0, 1) == 0 );
+    bool *= ( bwxnor(1, 1) == 1 );
+
+    return bool;
+}
+
+define test_bitwise_logic_bc(){
+
+    auto bool;
+    bool = 1;
+
+    bool *= testbwand();
+    bool;
+    bool *= testbwor();
+    bool;
+    bool *= testbwxor();
+    bool;
+    bool *= testbwnot();
+    bool;
+    bool *= testbwnand();
+    bool;
+    bool *= testbwnor();
+    bool;
+    bool *= testbwxnor();
+    bool;
+
+    return bool;
+}
+
+test_bitwise_logic_bc()
