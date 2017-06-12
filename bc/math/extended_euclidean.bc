@@ -1,0 +1,43 @@
+#!/usr/bin/bc
+
+# https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm#Pseudocode
+define void extended_gcd_api(a, b, n, *ret[]){
+
+    auto s, olds, t, oldt, r, oldr, quotient, prov;
+    s = 0; olds = 1;
+    t = 1; oldt = 0;
+    r = b; oldr = a;
+
+    # TODO check if mod() is required here
+    while (r != 0){
+        quotient = oldr / r;
+        prov = r;
+        r = mod(oldr - mod(quotient*prov,n),n);
+        #r = (oldr - (quotient*prov));
+        oldr = prov;
+        prov = s;
+        s = mod(olds - mod(quotient*prov,n),n);
+        #s = (olds - (quotient*prov));
+        olds = prov;
+        prov = t;
+        t = mod(oldt - mod(quotient*prov,n),n);
+        #t = (oldt - (quotient*prov));
+        oldt = prov;
+    }
+    #ret[0] = olds; ret[1] = oldt;
+    #ret[2] = oldr;
+    #ret[3] = t;    ret[4] = s;
+    ret[0] = mod(olds,n); ret[1] = mod(oldt,n); # Bezout coefficients
+    ret[2] = mod(oldr,n);                       # greatest common divisor
+    ret[3] = mod(t,n);    ret[4] = mod(s,n);    # quotients by the gcd
+}
+
+define void egcd(a, b, n){
+
+    auto ret[];
+    extendedgcdapi(a,b,n,ret[]);
+
+    print "Bézout coefficients :\n", ret[0], "\n", ret[1], "\n";
+    print "greatest common divisor :\n", ret[2], "\n";
+    print "quotients by the gcd : \n", ret[3], "\n", ret[4], "\n";
+}

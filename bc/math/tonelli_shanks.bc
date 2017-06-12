@@ -1,0 +1,73 @@
+#!/usr/bin/bc
+
+define factorpow(p,r){
+
+    auto i;
+    i = 0;
+
+    while (( p > 1 ) && ( mod(p,r) == 0 )){
+        i += 1;
+        p /= r;
+    }
+
+    return i;
+}
+
+define getnonres(p,r){
+
+    auto nonres, pow;
+    pow = mod((p-1)*invmod(r,p),p);
+    nonres = 1;
+
+    while ( isresidue(nonres,r,p) ){
+        nonres += 1;
+    }
+
+    return nonres;
+}
+
+define isresidue(res, r, p){
+
+    auto test;
+    test=powmod(res,(p-1)/r,p);
+    return ( test == mod(p,test)+1 );
+}
+
+define void setrootvals(r, p, *rootvals[]){
+
+    rootvals[0] = getnonres(p,r);
+    rootvals[1] = factorpow((p-1)*rootvals[0],r);
+    rootvals[2] = (p / r^rootvals[1]);
+
+    rootvals[3] = powmod(rootvals[0],rootvals[2],p);
+    #print "rootvals[0] : ", rootvals[0], " rootvals[1] : ", rootvals[1], " rootvals[2] : ", rootvals[2], " rootvals[3] : ", rootvals[3], "\n";
+}
+
+# https://en.wikipedia.org/wiki/Tonelli%E2%80%93Shanks_algorithm#The_algorithm
+# s, q and c are computed by setrootvals()
+define void tonshan(n, l, s, q, c, p, *res[]){
+
+    auto r, t, m, i, b;
+
+    res[0] = 0;
+    res[1] = 0;
+    r = powmod(n,(q+1)/l,p);
+    t = powmod(n,q,p);
+    m = s;
+
+    while ( t != 1 ){
+
+      i=1;
+      while ( (powmod(t,powmod(l,i,p),p) != 1) && (i < m) ){
+          i += 1;
+      }
+
+      b = powmod(c,powmod(l,(m-i-1),p),p);
+      r = mod(r * b, p);
+      t = mod(t * (b^l),p);
+      c = mod(b^l,p);
+      m = i;
+    }
+
+    res[0] = r;
+}
