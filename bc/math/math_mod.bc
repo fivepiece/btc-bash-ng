@@ -1,0 +1,54 @@
+#!/usr/bin/bc
+
+# functions for simple modular arithmetic
+
+# simple mod
+define mod(a, n){
+
+    if (a < 0){
+
+        if (-a == n ){
+            return 0;
+        }
+
+        return ((a % n) + n);
+    }
+
+    return (a % n);
+}
+
+# returns the inverse of a in n
+define invmod(a, n){
+
+    auto ret[];
+    extended_gcd_api(a, n, n, ret[]);
+    return ret[0];
+}
+
+# returns base to the power exp mod n
+define powmod(base, exp, n){
+
+    auto res, b, e;
+    b = base;
+    e = exp;
+
+    res = 1;
+    b = mod(b, n);
+    while ( e > 1 ){
+
+        if (e % 2 == 1){
+
+            res = mod((res * b), n);
+        }
+
+        e = (e / 2);
+        b = mod((b * b), n);
+    }
+
+    if ( e == 1 ){
+
+        res = mod((res * b), n);
+    }
+
+    return res;
+}

@@ -1,0 +1,79 @@
+#!/usr/bin/bc
+
+# factors out powers of r from p
+define factor_pow(p, r){
+
+    auto i;
+    i = 0;
+
+    while (( p > 1 ) && ( mod(p, r) == 0 )){
+        i += 1;
+        p /= r;
+    }
+
+    return i;
+}
+
+# returns a non r residue in p
+define get_non_residue(p,r){
+
+    auto nonres, pow;
+    pow = mod((p-1) * invmod(r ,p), p);
+    nonres = 1;
+
+    while ( is_residue(nonres, r, p) ){
+        nonres += 1;
+    }
+
+    return nonres;
+}
+
+# returns 1 if res is r residue in p, 0 if not
+define is_residue(res, r, p){
+
+    auto test;
+    test = powmod(res, (p-1)/r ,p);
+    return ( test == mod(p, test) + 1 );
+}
+
+# sets an array of values required for root computation
+define void set_root_values(r, p, *rootvals[]){
+
+    rootvals[0] = get_non_residue(p, r);
+    rootvals[1] = factor_pow((p-1) * rootvals[0], r);
+    rootvals[2] = (p / r^rootvals[1]);
+
+    rootvals[3] = powmod(rootvals[0], rootvals[2], p);
+    # print "rootvals[0] : ", rootvals[0], " rootvals[1] : ", rootvals[1], " rootvals[2] : ", rootvals[2], " rootvals[3] : ", rootvals[3], "\n";
+}
+
+# https://en.wikipedia.org/wiki/Tonelli%E2%80%93Shanks_algorithm#The_algorithm
+# "A remark on the computation of cube roots in finite fields"
+# https://eprint.iacr.org/2009/457.pdf (3.1, table 3)
+# s, q and c are computed by set_root_values()
+define void tonelli_shanks_api(n, l, s, q, c, p, *res[]){
+
+    auto r, t, m, i, b;
+
+    res[0] = 0;
+    res[1] = 0;
+    r = powmod(n, (q+1) / l, p);
+    t = powmod(n, q, p);
+    m = s;
+
+    while ( t != 1 ){
+
+      i=1;
+      while ( (powmod(t, powmod(l,i,p), p) != 1) && (i < m) ){
+          i += 1;
+      }
+
+      b = powmod(c,powmod(l, (m-i-1), p), p);
+      r = mod(r * b, p);
+      t = mod(t * (b^l), p);
+      c = mod(b ^ l, p);
+      m = i;
+    }
+
+    res[0] = r;
+}
