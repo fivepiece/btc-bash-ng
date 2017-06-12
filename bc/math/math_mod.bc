@@ -1,10 +1,13 @@
 #!/usr/bin/bc
 
-define mod(a,n){
+# functions for simple modular arithmetic
+
+# simple mod
+define mod(a, n){
 
     if (a < 0){
-        
-        if (-a == n){
+
+        if (-a == n ){
             return 0;
         }
 
@@ -14,6 +17,7 @@ define mod(a,n){
     return (a % n);
 }
 
+# returns the inverse of a in n
 define invmod(a, n){
 
     auto ret[];
@@ -21,6 +25,7 @@ define invmod(a, n){
     return ret[0];
 }
 
+# returns base to the power exp mod n
 define powmod(base, exp, n){
 
     auto res, b, e;
@@ -28,71 +33,22 @@ define powmod(base, exp, n){
     e = exp;
 
     res = 1;
-    b = mod(b,n);
-    while (e > 1){
+    b = mod(b, n);
+    while ( e > 1 ){
 
         if (e % 2 == 1){
 
-            res = mod((res * b),n);
+            res = mod((res * b), n);
         }
 
         e = (e / 2);
-        b = mod((b * b),n);
+        b = mod((b * b), n);
     }
 
-    if (e == 1){
+    if ( e == 1 ){
 
-        res = mod((res * b),n);
+        res = mod((res * b), n);
     }
 
     return res;
-}
-
-define void rootmod_api(x,r,p,*roots[]){
-
-    auto s, q, z, c, ret[], rootvals[];
-
-    roots[0] = 0;
-    rootvals[0] = 0;
-
-    setrootvals(r,p,rootvals[]);
-    s = rootvals[1];
-    q = rootvals[2];
-    z = rootvals[0];
-    c = rootvals[3];
-
-    # print "s : ", s, " q : ", q, " z : ", z, " c : ", c, "\n";  
-    tonshan(x, r, s, q, c, p, ret[]);
-
-    if ( r % 2 == 0 ){
-
-        roots[0] = 2;
-        roots[1] = ret[0]
-        roots[2] = mod(-ret[0],p);
-    } else {
-
-        roots[0] = 3;
-        roots[1] = ret[0];
-        roots[2] = mod(ret[0]*c,p);
-        roots[3] = mod(ret[0]*invmod(c,p),p);
-    }
-}
-
-define rootmod(n, r, p){
-
-    auto ret[];
-
-    if ( ! isresidue(n, r, p) ){
-        print "\n# *** Not a residue of pow ", r, "\n";
-        return 0
-    }
-
-    rootmod_api(n, r, p, ret[]);
-
-    print "\n# rootmod()\n#\n";
-    for ( i=1; i<=ret[0]; i++){
-        print "# r",i," = ", ret[i], "\n";
-    }
-
-    return ret[1];
 }

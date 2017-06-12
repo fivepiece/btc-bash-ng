@@ -32,10 +32,11 @@ define void extended_gcd_api(a, b, n, *ret[]){
     ret[3] = mod(t,n);    ret[4] = mod(s,n);    # quotients by the gcd
 }
 
+# prints the results returned by the api
 define void egcd(a, b, n){
 
     auto ret[];
-    extendedgcdapi(a,b,n,ret[]);
+    extended_gcd_api(a,b,n,ret[]);
 
     print "Bézout coefficients :\n", ret[0], "\n", ret[1], "\n";
     print "greatest common divisor :\n", ret[2], "\n";
