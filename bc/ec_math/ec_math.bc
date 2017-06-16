@@ -1,0 +1,213 @@
+#!/usr/bin/bc
+
+# functions for operations on an elliptic curve
+
+define ispoint_api(x, y, a, b, p){
+
+    auto ysq, xcb, ax, ans;
+
+    ysq = powmod(y, 2, p);
+    xcb = powmod(x, 3, p);
+    ax = mod(a * x, p);
+
+    ans = mod( mod((ysq - xcb - ax - b), p), p);
+    return (ans == 0);
+}
+
+define ispoint(x, y){
+
+    return ispoint_api(x, y, curve_a, curve_b, curve_p);
+}
+
+define void gety_api(x, a, b, p, *ret[]){
+
+    auto q, z, ysq, tmp;
+
+    q = (p - 1) / 2;
+    z = invmod(2, q);
+    ysq = mod((powmod(x, 3, p) + (a * x) + b), p);
+
+    tmp = powmod(ysq, z, p);
+    if (tmp % 2 == 0){
+
+        ret[0] = tmp;
+        ret[1] = mod(-tmp, p);
+    } else {
+        ret[0] = mod(-tmp, p);
+        ret[1] = tmp;
+    }
+}
+
+
+define void gety(x){
+
+    auto ret[];
+
+    gety_api(x, curve_a, curve_b, curve_p, ret[]);
+
+    print "\n# gety\n# Y1 : ", ret[0], "\n# Y2 : ", ret[1], "\n";
+}
+
+
+define slope_api(px, py, qx, qy, p){
+
+    auto num, den;
+
+    if (qy - py != 0){
+
+        num = mod((qy - py),p);
+        den = invmod((qx - px),p);
+    
+    } else {
+
+	num = mod((3 * px^2 + curve_a),p);
+	den = invmod((2 * py),p);
+    }
+
+    return (mod((num * den),p));
+}
+
+
+define void ecadd_api(px, py, qx, qy, p, *ret[]){
+
+    auto slp;
+
+    if (!ispoint_api(px, py, p) || !ispoint_api(qx, qy, p)){
+        
+        if (px == 0 && py == 0){
+
+            ret[0] = qx;
+            ret[1] = qy;
+            return;
+        }
+
+        if (qx == 0 && qy == 0){
+
+            ret[0] = px;
+            ret[1] = py;
+            return;
+        }
+
+        print "\n ### Not a point\n";
+        ret[0] = 0;
+        ret[1] = 0;
+        return;
+    }
+
+    if (py != mod(-qy, p)){
+
+        slp = slope_api(px, py, qx, qy, p);
+
+        ret[0] = mod((slp^2 - px - qx),p);
+        ret[1] = mod((slp*(px - rx) - py),p);
+    }
+}
+
+define void ecadd(px, py, qx, qy){
+
+    auto ret[];
+    ecadd_api(px, py, qx, qy, curve_p, ret[]);
+
+    print "\n# ecadd\n# X : ", ret[0], "\n# Y : ", ret[1], "\n";
+}
+
+
+define void ecmul_api(d, gx, gy, n, p, *ret[]){
+
+    auto i, darr[], parr[];
+
+#    dtmp = mod(d,n);
+#    i = 0;
+#    while (dtmp > 0){
+#
+#	    darr[i] = dtmp % 2;	
+#	    i = i+1;
+#	    dtmp /= 2;
+#    }
+
+    num2bitarr(d, darr[]);
+
+    parr[0] = gx;
+    parr[1] = gy;
+    ret[0] = 0;
+    ret[1] = 0;
+
+    for (i=0; i < darr[0]; i++){
+
+	    if (darr[i] == 1){
+ 
+	        ecadd_api(parr[0], parr[1], ret[0], ret[1], curve_p, ret[]);
+        }
+        ecadd_api(parr[0], parr[1], parr[0], parr[1], curve_p, parr[]);
+    }
+}
+
+define void compresspoint(x, y){
+
+    if ( ispoint(x, y) ){
+
+        if (y % 2){
+
+            print "03";
+        } else {
+
+            print "02";
+        }
+
+        pad(x, numwsize);
+    } else {
+
+        pad(0, numwsize);
+    }
+}
+
+define void ecmul(d){
+
+    auto ret[];
+
+    ecmul_api(d, curve_gx, curve_gy, curve_n, curve_p, ret[]);
+
+    ret[0];
+    ret[1];
+    # print "\n# ecmul\n# X : ";
+    # pad(ret[0],40);
+    # print "# Y : ";
+    # pad(ret[1],40);
+    # print "\n";
+    # compresspoint(tx,ty);
+}
+
+define void uncompresspoint_api(x, *ret[]){
+
+    auto xval, yarr[];
+    xval = x;
+
+    gety_api(( mod(x, 10 ^ numwsize) ), curve_a, curve_b, curve_p, yarr[]);
+
+    if (yarr[0] % 2){
+
+        yeven = y[1];
+        yodd = y[0];
+    } else {
+
+        yeven = y[0];
+        yodd = y[1];
+    }
+
+    if ( xval > ( 3*(10^numwsize) ) ){
+
+        xval = ( xval - 3*(10^numwsize) );
+        yval = yodd;
+
+    } else if ( xval > ( 2*(10^numwsize) ) ){
+
+        xval = ( xval - 2*(10^numwsize) );
+        yval = yeven;
+
+    } else {
+
+        xval = 0;
+    }
+
+    xval; yval;
+}
