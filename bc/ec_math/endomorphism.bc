@@ -9,7 +9,7 @@ define get_decimal_sqrt(n){
 
     auto base;
     base=2;
-    for (i=1; base<( 2^ (wordlen(n) * 2) ); i++){
+    for (i=1; base<(2 ^ (wordlen(n) * 2) ); i++){
 
         base=powmod(2, i, n);
     }

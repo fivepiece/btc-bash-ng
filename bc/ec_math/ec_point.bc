@@ -2,31 +2,73 @@
 
 # functions for points on elliptic curves
 
-define void gety_api(x, a, b, p, *ret[]){
+define void gety_fast_api(x, *ret[]){
 
     auto q, z, ysq, tmp;
 
-    q = (p - 1) / 2;
+    q = (curve_p - 1) / 2;
     z = invmod(2, q);
-    ysq = mod((powmod(x, 3, p) + (a * x) + b), p);
+    ysq = mod((powmod(x, 3, curve_p) + (curve_a * x) + curve_b), curve_p);
 
-    tmp = powmod(ysq, z, p);
+    tmp = powmod(ysq, z, curve_p);
     if (tmp % 2 == 0){
 
         ret[0] = tmp;
-        ret[1] = mod(-tmp, p);
+        ret[1] = mod(-tmp, curve_p);
     } else {
-        ret[0] = mod(-tmp, p);
+        ret[0] = mod(-tmp, curve_p);
         ret[1] = tmp;
+    }
+}
+
+define void getyfromx_api(x, *ret[]){
+
+    auto tmp[];
+    rootmod_api(powmod(x, 3, curve_p) + curve_b, 2, curve_p, tmp[]);
+    ret[0] = tmp[1];
+    ret[1] = tmp[2];
+}
+
+define void getxfromy_api(y, *ret[]){
+
+    auto tmp[];
+    rootmod_api(powmod(y, 2, curve_p) - curve_b, 3, curve_p, ret[]);
+    ret[0] = tmp[1];
+    ret[1] = tmp[2];
+    ret[2] = tmp[3];
+}
+
+define getyfromx(x){
+
+    auto ret[];
+    getyfromx_api(x, ret[]);
+
+    return ret[1];
+}
+
+define getxfromy(y){
+
+    auto ret[];
+    getxfromy_api(y, ret[]);
+
+    return ret[1];
+}
+
+define void gety_api(x, *ret[]){
+
+    if (curve_p % 4 == 3){
+
+        gety_fast_api(x, ret[]);
+    } else {
+
+        getyfromx_api(x, ret[]);
     }
 }
 
 define void gety(x){
 
     auto ret[];
-
-    gety_api(x, curve_a, curve_b, curve_p, ret[]);
-
+    gety_api(x, ret[]);
     print "\n# gety\n# Y1 : ", ret[0], "\n# Y2 : ", ret[1], "\n";
 }
 
@@ -75,7 +117,7 @@ define void uncompresspoint_api(x, *ret[]){
 
     auto yarr[];
 
-    gety_api(( mod(x, 10 ^ curve_words) ), curve_a, curve_b, curve_p, yarr[]);
+    gety_api(( mod(x, 10 ^ curve_words) ), yarr[]);
 
     if ( x > ( 3*(10 ^ curve_words) ) ){
 
