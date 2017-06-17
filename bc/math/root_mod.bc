@@ -49,7 +49,7 @@ define rootmod(n, r, p){
     rootmod_api(n, r, p, ret[]);
 
     print "\n# rootmod()\n#\n";
-    for ( i=1; i<=ret[0]; i++){
+    for ( i=1; i <= ret[0]; i++){
         print "# r", i, " = ", ret[i], "\n";
     }
 

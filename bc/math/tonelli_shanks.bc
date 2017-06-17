@@ -64,13 +64,13 @@ define void tonelli_shanks_api(n, l, s, q, c, p, *res[]){
     while ( t != 1 ){
 
       i=1;
-      while ( (powmod(t, powmod(l,i,p), p) != 1) && (i < m) ){
+      while ( (powmod(t, powmod(l, i, p), p) != 1) && (i < m) ){
           i += 1;
       }
 
-      b = powmod(c,powmod(l, (m-i-1), p), p);
+      b = powmod(c, powmod(l, (m - i - 1), p), p);
       r = mod(r * b, p);
-      t = mod(t * (b^l), p);
+      t = mod(t * (b ^ l), p);
       c = mod(b ^ l, p);
       m = i;
     }

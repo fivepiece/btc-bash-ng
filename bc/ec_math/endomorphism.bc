@@ -8,10 +8,10 @@
 define get_decimal_sqrt(n){
 
     auto base;
-    base=2;
-    for (i=1; base<(2 ^ (wordlen(n) * 2) ); i++){
+    base = 2;
+    for (i=1; base<(2 ^ (wordlen(n) * 2)); i++){
 
-        base=powmod(2, i, n);
+        base = powmod(2, i, n);
     }
 
     return base-1;
@@ -33,13 +33,13 @@ define void set_balanced_mul_vals_api(a, b, n, *ret[]){
         # print "r[",i,"] : ", r[i],"\n";
         quotient = r[i-1] / r[i]; 
         prov = r[i];
-        r[i] = mod(r[i-1] - mod(quotient*prov,n),n);
+        r[i] = mod(r[i-1] - mod(quotient*prov, n), n);
         r[i-1] = prov;
         prov = s[i];
-        s[i] = mod(s[i-1] - mod(quotient*prov,n),n);
+        s[i] = mod(s[i-1] - mod(quotient*prov, n), n);
         s[i-1] = prov;
         prov = t[i];
-        t[i] = mod(t[i-1] - mod(quotient*prov,n),n);
+        t[i] = mod(t[i-1] - mod(quotient*prov, n), n);
         t[i-1] = prov;
         # print "i : ", i, "\n";
         # print "r[",i-1,"] : ", r[i-1],"\n";
@@ -65,7 +65,7 @@ define void set_balanced_mul_vals_api(a, b, n, *ret[]){
     # print "t[l+1] : ", t[l+1], "\nt[l+2] : ", t[l+2], "\n";
     a1 = r[l+1];
     b1 = -t[l+1];
-    if (mod((r[l]^2 + t[l]^2),n) <= mod((r[l+2]^2 + t[l+2]^2),n)) {
+    if (mod((r[l]^2 + t[l]^2), n) <= mod((r[l+2]^2 + t[l+2]^2), n)) {
         a2 = r[l];
         b2 = -t[l];
     } else {
@@ -77,42 +77,45 @@ define void set_balanced_mul_vals_api(a, b, n, *ret[]){
     ret[2] = a2; ret[3] = b2;
 }
 
-define void set_balanced_mul_vals(lambda, n){
-
-    auto ret[];
-    set_balanced_mul_vals_api(n, lambda, n, ret[]);
-    a1 = ret[0]; b1 = ret[1];
-    a2 = ret[2]; b2 = ret[3];
-}
-
-define void get_balanced_mul_vals(lambda, n){
-
-    auto ret[];
-    set_balanced_mul_vals_api(n, lambda, n, ret[]);
-    print "a1 : ", ret[0], "\n";
-    print "b1 : ", ret[1], "\n";
-    print "a2 : ", ret[2], "\n";
-    print "b2 : ", ret[3], "\n";
-}
+#define void set_balanced_mul_vals(lambda, n){
+#
+#    auto ret[];
+#    set_balanced_mul_vals_api(n, lambda, n, ret[]);
+#    a1 = ret[0]; b1 = ret[1];
+#    a2 = ret[2]; b2 = ret[3];
+#}
+#
+#define void get_balanced_mul_vals(lambda, n){
+#
+#    auto ret[];
+#    set_balanced_mul_vals_api(n, lambda, n, ret[]);
+#    print "a1 : ", ret[0], "\n";
+#    print "b1 : ", ret[1], "\n";
+#    print "a2 : ", ret[2], "\n";
+#    print "b2 : ", ret[3], "\n";
+#}
 
 define void set_endomorphism_vals(){
 
-    auto ret[], t;
-    rootmod_api(1, 3, pp, ret[]);
-    endomorphism_beta = ret[2];
+    auto endo_betas[], endo_lambdas[], endo_a_vals[];
+    rootmod_api(1, 3, curve_p, endo_betas[]);
+    endomorphism_beta = endo_betas[2];
 
-    rootmod_api(1,3,nn,ret[]);
-    endomorphism_lambda= ret[3];
-    print "lambda : ", endomorphism_lambda, "\nbeta : ", endomorphism_beta, "\n";
+    rootmod_api(1, 3, curve_n, endo_lambdas[]);
+    endomorphism_lambda = endo_lambdas[3];
+    # print "lambda : ", endomorphism_lambda, "\nbeta : ", endomorphism_beta, "\n";
 
-    t = set_balanced_mul_vals(endomorphism_lambda, nn);
-    t = get_balanced_mul_vals(endomorphism_lambda, nn);
+    set_balanced_mul_vals_api(endomorphism_lambda, curve_n, endo_a_vals[]);
+    endomorphism_a1 = ret[0];
+    endomorphism_b1 = ret[1];
+    endomorphism_a2 = ret[2];
+    endomorphism_b2 = ret[3];
 }
 
-define void getlambdapoint(beta, gx, gy, pp, *ret[]){
+define void get_lambda_point_api(beta, gx, gy, pp, *ret[]){
 
-    ret[0] = mod(beta*gx,pp); # Q'_x
-    ret[1] = gy;              # Q'_y
+    ret[0] = mod(beta * gx, curve_p); # Q'_x
+    ret[1] = gy;                      # Q'_y
 }
 
 # 3.74 Balanced length-two representation of a multiplier
@@ -135,37 +138,4 @@ define void balanced_length_mod(k, n){
     auto ret[];
     balanced_length_api(k,a1,b1,a2,b2,n,ret[]);
     print "k1 : ", ret[0], "\nk2 : ", ret[1], "\n";
-}
-
-define void fastecmulapi(d, qx, qy, n, p, *ret[]){
-
-    auto q1x, q1y, q2x, q2y, k1, k2;
-    getlambdapoint(endomorphism_beta, qx, qy, p, ret[]);
-    q2x = ret[0];
-    q2y = ret[1];
-    # print "q2x : ", q2x, "\nq2y : ", q2y, "\n";
-
-    balanced_length_api(d, a1, b1, a2, b2, n, ret[]);
-    k1 = ret[0];
-    k2 = ret[1];
-    # print "k1 : ", k1, "\nk2 : ", k2, "\n";
-
-    ecmulcurve(k1,qx,qy,n,p);
-    ret[0] = tx;
-    ret[1] = ty;
-    # print "tx : ", tx, "\nty : ", ty, "\n";
-    ecmulcurve(-k2,q2x,q2y,n,p);
-    ret[2] = tx;
-    ret[3] = ty;
-    # print "tx : ", tx, "\nty : ", ty, "\n";
-
-    ecaddcurve(ret[0],ret[1],ret[2],-ret[3],p);
-    ret[0] = rx;
-    ret[1] = ry;
-    # rx; ry;
-}
-
-define void fastecmul(d){
-    fastecmulapi(d,ggx,ggy,nn,pp,ret[]);
-    compresspoint(ret[0],ret[1]);
 }
