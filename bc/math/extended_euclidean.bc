@@ -12,15 +12,18 @@ define void extended_gcd_api(a, b, n, *ret[]){
     while (r != 0){
         quotient = oldr / r;
         prov = r;
-        r = mod(oldr - mod(quotient*prov,n),n);
+        r = mod(oldr - quotient*prov,n);
+        #r = mod(oldr - mod(quotient*prov,n),n);
         #r = (oldr - (quotient*prov));
         oldr = prov;
         prov = s;
-        s = mod(olds - mod(quotient*prov,n),n);
+        s = mod(olds - quotient*prov,n);
+        #s = mod(olds - mod(quotient*prov,n),n);
         #s = (olds - (quotient*prov));
         olds = prov;
         prov = t;
-        t = mod(oldt - mod(quotient*prov,n),n);
+        t = mod(oldt - quotient*prov,n);
+        #t = mod(oldt - mod(quotient*prov,n),n);
         #t = (oldt - (quotient*prov));
         oldt = prov;
     }

@@ -2,7 +2,7 @@
 
 # functions for points on elliptic curves
 
-define void gety_fast_api(x, *ret[]){
+define void gety_fast_api(x, *yarr[]){
 
     auto q, z, ysq, tmp;
 
@@ -13,29 +13,29 @@ define void gety_fast_api(x, *ret[]){
     tmp = powmod(ysq, z, curve_p);
     if (tmp % 2 == 0){
 
-        ret[0] = tmp;
-        ret[1] = mod(-tmp, curve_p);
+        yarr[0] = tmp;
+        yarr[1] = mod(-tmp, curve_p);
     } else {
-        ret[0] = mod(-tmp, curve_p);
-        ret[1] = tmp;
+        yarr[0] = mod(-tmp, curve_p);
+        yarr[1] = tmp;
     }
 }
 
-define void getyfromx_api(x, *ret[]){
+define void getyfromx_api(x, *yvals[]){
 
-    auto tmp[];
-    rootmod_api(powmod(x, 3, curve_p) + curve_b, 2, curve_p, tmp[]);
-    ret[0] = tmp[1];
-    ret[1] = tmp[2];
+    auto roots[];
+    rootmod_api(powmod(x, 3, curve_p) + curve_b, 2, curve_p, roots[]);
+    yvals[0] = roots[1];
+    yvals[1] = roots[2];
 }
 
 define void getxfromy_api(y, *ret[]){
 
-    auto tmp[];
-    rootmod_api(powmod(y, 2, curve_p) - curve_b, 3, curve_p, ret[]);
-    ret[0] = tmp[1];
-    ret[1] = tmp[2];
-    ret[2] = tmp[3];
+    auto roots[];
+    rootmod_api(powmod(y, 2, curve_p) - curve_b, 3, curve_p, roots[]);
+    ret[0] = roots[1];
+    ret[1] = roots[2];
+    ret[2] = roots[3];
 }
 
 define getyfromx(x){
@@ -54,8 +54,9 @@ define getxfromy(y){
     return ret[1];
 }
 
-define void gety_api(x, *ret[]){
+define void gety_api(x, *yvals[]){
 
+    auto ret[];
     if (curve_p % 4 == 3){
 
         gety_fast_api(x, ret[]);
@@ -63,6 +64,9 @@ define void gety_api(x, *ret[]){
 
         getyfromx_api(x, ret[]);
     }
+
+    yvals[0] = ret[0];
+    yvals[1] = ret[1];
 }
 
 define void gety(x){
@@ -113,24 +117,24 @@ define void compresspoint(x, y){
     print "0", res, "\n";
 }
 
-define void uncompresspoint_api(x, *ret[]){
+define void uncompresspoint_api(x, *point[]){
 
-    auto yarr[];
+    auto tmp[];
 
-    gety_api(( mod(x, 10 ^ curve_words) ), yarr[]);
+    gety_api(( mod(x, 10 ^ curve_words) ), tmp[]);
 
     if ( x > ( 3*(10 ^ curve_words) ) ){
 
-        ret[0] = ( x - 3*(10 ^ curve_words) );
-        ret[1] = yarr[1];
+        point[0] = ( x - 3*(10 ^ curve_words) );
+        point[1] = tmp[1];
     } else if ( x > ( 2*(10 ^ curve_words) ) ){
 
-        ret[0] = ( x - 2*(10 ^ curve_words) );
-        ret[1] = yarr[0];
+        point[0] = ( x - 2*(10 ^ curve_words) );
+        point[1] = tmp[0];
     } else {
 
-        ret[0] = 0;
-        ret[1] = 0;
+        point[0] = 0;
+        point[1] = 0;
     }
 }
 

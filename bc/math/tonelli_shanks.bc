@@ -44,19 +44,16 @@ define void set_root_values(r, p, *rootvals[]){
     rootvals[2] = (p / r^rootvals[1]);
 
     rootvals[3] = powmod(rootvals[0], rootvals[2], p);
-    # print "rootvals[0] : ", rootvals[0], " rootvals[1] : ", rootvals[1], " rootvals[2] : ", rootvals[2], " rootvals[3] : ", rootvals[3], "\n";
 }
 
 # https://en.wikipedia.org/wiki/Tonelli%E2%80%93Shanks_algorithm#The_algorithm
 # "A remark on the computation of cube roots in finite fields"
 # https://eprint.iacr.org/2009/457.pdf (3.1, table 3)
 # s, q and c are computed by set_root_values()
-define void tonelli_shanks_api(n, l, s, q, c, p, *res[]){
+define tonelli_shanks_api(n, l, s, q, c, p){
 
     auto r, t, m, i, b;
 
-    res[0] = 0;
-    res[1] = 0;
     r = powmod(n, (q+1) / l, p);
     t = powmod(n, q, p);
     m = s;
@@ -75,5 +72,5 @@ define void tonelli_shanks_api(n, l, s, q, c, p, *res[]){
       m = i;
     }
 
-    res[0] = r;
+    return r;
 }

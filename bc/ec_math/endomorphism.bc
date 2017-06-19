@@ -20,7 +20,7 @@ define get_decimal_sqrt(n){
 # 2.19 Extended Euclidean algorithm for integers
 define void set_balanced_mul_vals_api(a, b, n, *ret[]){
 
-    auto s[], t[], r[], quotient, prov, sqrtn, sflag, i, l, a1, b1, a2, b2;
+    auto s[], t[], r[], quotient, prov, sqrtn, sflag, i, l;
     s[1] = 0; s[0] = 1;
     t[1] = 1; t[0] = 0;
     r[1] = b; r[0] = a;
@@ -63,49 +63,36 @@ define void set_balanced_mul_vals_api(a, b, n, *ret[]){
     # print "r[l+1] : ", r[l+1], "\nr[l+2] : ", r[l+2], "\n";
     # print "s[l+1] : ", s[l+1], "\ns[l+2] : ", s[l+2], "\n";
     # print "t[l+1] : ", t[l+1], "\nt[l+2] : ", t[l+2], "\n";
-    a1 = r[l+1];
-    b1 = -t[l+1];
+    #a1 = r[l+1];
+    #b1 = -t[l+1];
+    ret[0] = r[l+1];
+    ret[1] = -t[l+1];
     if (mod((r[l]^2 + t[l]^2), n) <= mod((r[l+2]^2 + t[l+2]^2), n)) {
-        a2 = r[l];
-        b2 = -t[l];
+        #a2 = r[l];
+        #b2 = -t[l];
+        ret[2] = r[l];
+        ret[3] = mod(-t[l], n);
     } else {
-        a2 = r[l+2];
-        b2 = -t[l+2];
+        #a2 = r[l+2];
+        #b2 = -t[l+2];
+        ret[2] = r[l+2];
+        ret[3] = mod(-t[l+2], n);
     }
-    b2 = mod(b2,n);
-    ret[0] = a1; ret[1] = b1;
-    ret[2] = a2; ret[3] = b2;
+    # b2 = mod(b2,n);
+    # ret[0] = a1; ret[1] = b1;
+    # ret[2] = a2; ret[3] = b2;
 }
-
-#define void set_balanced_mul_vals(lambda, n){
-#
-#    auto ret[];
-#    set_balanced_mul_vals_api(n, lambda, n, ret[]);
-#    a1 = ret[0]; b1 = ret[1];
-#    a2 = ret[2]; b2 = ret[3];
-#}
-#
-#define void get_balanced_mul_vals(lambda, n){
-#
-#    auto ret[];
-#    set_balanced_mul_vals_api(n, lambda, n, ret[]);
-#    print "a1 : ", ret[0], "\n";
-#    print "b1 : ", ret[1], "\n";
-#    print "a2 : ", ret[2], "\n";
-#    print "b2 : ", ret[3], "\n";
-#}
 
 define void set_endomorphism_vals(){
 
-    auto endo_betas[], endo_lambdas[], endo_a_vals[];
-    rootmod_api(1, 3, curve_p, endo_betas[]);
-    endomorphism_beta = endo_betas[2];
+    auto roots[], ret[];
+    rootmod_api(1, 3, curve_p, roots[]);
+    endomorphism_beta = roots[2];
 
-    rootmod_api(1, 3, curve_n, endo_lambdas[]);
-    endomorphism_lambda = endo_lambdas[3];
-    # print "lambda : ", endomorphism_lambda, "\nbeta : ", endomorphism_beta, "\n";
+    rootmod_api(1, 3, curve_n, roots[]);
+    endomorphism_lambda = roots[3];
 
-    set_balanced_mul_vals_api(endomorphism_lambda, curve_n, endo_a_vals[]);
+    set_balanced_mul_vals_api(curve_n, endomorphism_lambda, curve_n, ret[]);
     endomorphism_a1 = ret[0];
     endomorphism_b1 = ret[1];
     endomorphism_a2 = ret[2];
@@ -136,6 +123,6 @@ define void balanced_length_api(k, a1, b1, a2, b2, n, *ret[]){
 define void balanced_length_mod(k, n){
 
     auto ret[];
-    balanced_length_api(k,a1,b1,a2,b2,n,ret[]);
+    balanced_length_api(k, endomorphism_a1, endomorphism_b1, endomorphism_a2, endomorphism_b2, n, ret[]);
     print "k1 : ", ret[0], "\nk2 : ", ret[1], "\n";
 }
