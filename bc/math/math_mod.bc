@@ -18,11 +18,31 @@ define mod(a, n){
 }
 
 # returns the inverse of a in n
+# (stripped down egcd)
 define invmod(a, n){
 
-    auto ret[];
-    extended_gcd_api(a, n, n, ret[]);
-    return ret[0];
+    auto low_med, high_med, low, high, r, new_r, new_med;
+
+    if (a == 0){
+        return 0;
+    }
+
+    low_med = 1;
+    low = mod(a, n);
+    high = n;
+
+    while (low > 1){
+
+        r = ( high / low);
+        new_r = (high - (low * r));
+        new_med = (high_med - (low_med * r));
+        high = low;
+        high_med = low_med;
+        low = new_r;
+        low_med = new_med;
+    }
+
+    return mod(low_med, n);
 }
 
 # returns base to the power exp mod n

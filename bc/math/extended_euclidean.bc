@@ -12,18 +12,15 @@ define void extended_gcd_api(a, b, n, *ret[]){
     while (r != 0){
         quotient = oldr / r;
         prov = r;
-        r = mod(oldr - quotient*prov,n);
-        #r = mod(oldr - mod(quotient*prov,n),n);
+        r = mod(oldr - quotient*prov, n);
         #r = (oldr - (quotient*prov));
         oldr = prov;
         prov = s;
-        s = mod(olds - quotient*prov,n);
-        #s = mod(olds - mod(quotient*prov,n),n);
+        s = mod(olds - quotient*prov, n);
         #s = (olds - (quotient*prov));
         olds = prov;
         prov = t;
-        t = mod(oldt - quotient*prov,n);
-        #t = mod(oldt - mod(quotient*prov,n),n);
+        t = mod(oldt - quotient*prov, n);
         #t = (oldt - (quotient*prov));
         oldt = prov;
     }
@@ -44,4 +41,21 @@ define void egcd(a, b, n){
     print "Bézout coefficients :\n", ret[0], "\n", ret[1], "\n";
     print "greatest common divisor :\n", ret[2], "\n";
     print "quotients by the gcd : \n", ret[3], "\n", ret[4], "\n";
+}
+
+# simple gcd
+define euclidean_algorithm(a, b, n){
+
+    auto t;
+    while (b > 1){
+        t = b;
+        b = mod(a, b);
+        a = t;
+    }
+    return a;
+}
+
+define gcd(a, b){
+
+    return euclidean_algorithm(mod(a, curve_n), mod(b,curve_n), curve_n);
 }
