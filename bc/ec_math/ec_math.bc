@@ -47,8 +47,7 @@ define void ecadd_api(px, py, qx, qy, p, *ret[]){
 
     if (py != mod(-qy, p)){
 
-        slp = slope_api(px, py, qx, qy, p);
-
+        slp = mod((qy - py) * invmod((qx - px), p), p);;
         ret[0] = mod((slp^2 - px - qx),p);
         ret[1] = mod((slp*(px - ret[0]) - py),p);
     }
@@ -112,7 +111,6 @@ define void ecmul_api(d, gx, gy, n, p, *ret[]){
  
 	        ecadd_api(parr[0], parr[1], ret[0], ret[1], curve_p, ret[]);
         }
-        # ecadd_api(parr[0], parr[1], parr[0], parr[1], curve_p, parr[]);
         ecdouble_api(parr[0], parr[1], curve_p, parr[]);
         d /= 2;
     }
