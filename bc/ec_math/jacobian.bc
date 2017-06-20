@@ -1,0 +1,29 @@
+#!/usr/bin/bc
+
+define void ec_aff2jac_api(x, y, *jpt[]){
+
+    jpt[0] = x;
+    jpt[1] = y;
+    jpt[2] = 1;
+}
+
+define void ec_aff2jac(p, *jpt[]){
+
+    auto pt[];
+    uncompresspoint_api(p, pt[]);
+    ac_aff2jac_api(pt[0], pt[1], jpt[]);
+}
+
+define void ec_jac2aff_api(x, y, z, *pt[]){
+
+    pt[0] = mod(x * invmod(powmod(z,2,curve_p), curve_p), curve_p);
+    pt[1] = mod(y * invmod(powmod(z,3,curve_p), curve_p), curve_p);
+}
+
+define void ec_jac2aff(x, y, z){
+
+    auto pt[];
+
+    ec_jac2aff_api(x, y, z, pt[]);
+    compresspoint(pt[0], pt[1]);
+}
