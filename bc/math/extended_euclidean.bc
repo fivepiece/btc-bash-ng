@@ -44,6 +44,7 @@ define void egcd(a, b, n){
 }
 
 # simple gcd
+# https://en.wikipedia.org/wiki/Euclidean_algorithm
 define euclidean_algorithm(a, b, n){
 
     auto t;
