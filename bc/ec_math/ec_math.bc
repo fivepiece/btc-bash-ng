@@ -109,7 +109,7 @@ define void ecmul(d){
     compresspoint(ret[0], ret[1]);
 }
 
-define void ecmul_fast_api(d, qx, qy, n, p, *ret[]){
+define void fastecmul_api(d, qx, qy, n, p, *ret[]){
 
     auto lambda_q[], k[], p1[], p2[];
 
@@ -131,6 +131,6 @@ define void ecmul_fast_api(d, qx, qy, n, p, *ret[]){
 define void fastecmul(d){
 
     auto ret[];
-    ecmul_fast_api(d, curve_gx, curve_gy, curve_n, curve_p, ret[]);
+    fastecmul_api(d, curve_gx, curve_gy, curve_n, curve_p, ret[]);
     compresspoint(ret[0],ret[1]);
 }

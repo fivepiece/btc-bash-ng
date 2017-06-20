@@ -19,6 +19,7 @@ define mod(a, n){
 
 # returns the inverse of a in n
 # (stripped down egcd)
+# https://en.wikipedia.org/wiki/Modular_multiplicative_inverse#Extended_Euclidean_algorithm
 define invmod(a, n){
 
     auto low_med, high_med, low, high, r, new_r, new_med;
