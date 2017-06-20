@@ -105,6 +105,7 @@ define compresspoint_api(x, y){
             return (x + 2*(10 ^ curve_words));
         }
     } else {
+        print "\n ### Not a point\n";
         return 0;
     }
 }
