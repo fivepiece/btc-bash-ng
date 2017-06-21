@@ -1,29 +1,185 @@
 #!/usr/bin/bc
 
-define void ec_aff2jac_api(x, y, *jpt[]){
+define void ecpf_aff2jac_api(x, y, *jpt[]){
 
     jpt[0] = x;
     jpt[1] = y;
     jpt[2] = 1;
 }
 
-define void ec_aff2jac(p, *jpt[]){
+define void ecpf_aff2jac(p, *jpt[]){
 
     auto pt[];
     uncompresspoint_api(p, pt[]);
-    ac_aff2jac_api(pt[0], pt[1], jpt[]);
+    ecpf_aff2jac_api(pt[0], pt[1], jpt[]);
 }
 
-define void ec_jac2aff_api(x, y, z, *pt[]){
+define void ecpf_jac2aff_api(x, y, z, *pt[]){
 
     pt[0] = mod(x * invmod(powmod(z,2,curve_p), curve_p), curve_p);
     pt[1] = mod(y * invmod(powmod(z,3,curve_p), curve_p), curve_p);
 }
 
-define void ec_jac2aff(x, y, z){
+define void ecpf_jac2aff(x, y, z){
 
     auto pt[];
 
-    ec_jac2aff_api(x, y, z, pt[]);
+    ecpf_jac2aff_api(x, y, z, pt[]);
     compresspoint(pt[0], pt[1]);
+}
+
+define void ecpf_jac_double_api(x, y, z, a, p, *jpt[]){
+
+    auto s, m;
+
+    if (y == 0){
+        jpt[0] = 1;
+        jpt[1] = 1;
+        jpt[2] = 0;
+        return;
+    }
+    s = mod(4 * x * y^2, p);
+    m = mod((3 * x^2) + (a * z^4), p);
+    jpt[0] = mod(m^2 - 2*s, p);
+    jpt[1] = mod(m * (s - jpt[0]) - 8*y^4, p);
+    jpt[2] = mod(2 * y * z, p);
+}
+
+define void ecpf_jac_double(*p[], *jpt[]){
+
+   if (p[0] == 1 && p[1] == 1 && p[2] == 0){
+        jpt[0] = 1;
+        jpt[1] = 1;
+        jpt[2] = 0;
+        return;
+    }
+    ecpj_jac_double_api(p[0], p[1], p[2], curve_a, curve_p, jpt[]);
+}
+
+define void ecpf_aff2jac_double(p, *jpt[]){
+
+    auto pt[];
+
+    uncompresspoint_api(p, pt[]);
+    ecpf_jac_double_api(pt[0], pt[1], 1, curve_a, curve_p, jpt[]);
+    ecpf_jac2aff(jpt[0], jpt[1], jpt[2]);
+}
+
+define void ecpf_jac_add_api(px, py, pz, qx, qy, qz, a, p, *jpt[]){
+
+    auto u1, u2, s1, s2, h, r;
+
+    if (px == 1 && py == 1 && pz == 0){
+        jpt[0] = qx;
+        jpt[1] = qy;
+        jpt[2] = qz;
+        return;
+    }
+    if (qx == 1 && qy == 1 && qz == 0){
+        jpt[0] = px;
+        jpt[1] = py;
+        jpt[2] = pz;
+        return;
+    }
+    u1 = mod(px * qz^2, p);
+    u2 = mod(qx * pz^2, p);
+    s1 = mod(py * qz^3, p);
+    s2 = mod(qy * pz^3, p);
+    if (u1 == u2){
+        if (s1 != s2){
+            jpt[0] = 1;
+            jpt[1] = 1;
+            jpt[2] = 0;
+            return;
+        } else {
+            ecpf_jac_double_api(px, py, pz, a, p, jpt[]);
+            return;
+        }
+    }
+    h = mod(u2 - u1, p);
+    r = mod(s2 - s1, p);
+    jpt[0] = mod(r^2 - h^3 - (2 * u1 * h^2), p);
+    jpt[1] = mod(r * (u1 * h^2 - jpt[0]) - (s1 * h^3), p);
+    jpt[2] = mod(h * pz * qz, p);
+}
+
+define void ecpf_jac_add(*ptp[], *ptq[], *jpt[]){
+    ecpf_jac_add_api(ptp[0], ptp[1], ptp[2], ptq[0], ptq[1], ptq[2], curve_a, curve_p, jpt[]);
+}
+
+define void ecpf_aff2jac_add(ptp, ptq[], *jpt[]){
+
+    auto ptp[];
+
+    uncompresspoint_api(p, ptp[]);
+    ecpf_jac_add_api(ptp[0], ptp[1], 1, ptq[0], ptq[1], ptq[2], curve_a, curve_p, jpt[]);
+    ecpf_jac2aff(jpt[0], jpt[1], jpt[2]);
+}
+
+define void ecpf_jac_mul_api(d, ptg[], a, p, n, *jpt[]){
+
+    auto parr[];
+
+    parr[0] = ptg[0];
+    parr[1] = ptg[1];
+    parr[2] = ptg[2];
+    jpt[0] = 1;
+    jpt[1] = 1;
+    jpt[2] = 0;
+    if (d < 0){
+        d = mod(d, n);
+    }
+    if (d > n/2){
+        d = mod(-d, n);
+        parr[1] = mod(-ptg[1], p);
+    }
+
+    while (d > 0){
+
+        if (d % 2){
+            ecpf_jac_add_api(parr[0], parr[1], parr[2], jpt[0], jpt[1], jpt[2], curve_a, curve_p, jpt[]);
+        }
+        ecpf_jac_double_api(parr[0], parr[1], parr[2], curve_a, curve_p, parr[]);
+        d /= 2;
+    }
+}
+
+define void ecpf_jac_mul(d){
+
+    auto ptg[], jpt[], pt[];
+
+    ecpf_aff2jac_api(curve_gx, curve_gy, ptg[]);
+    ecpf_jac_mul_api(d, ptg[], curve_a, curve_p, curve_n, jpt[]);
+    ecpf_jac2aff(jpt[0], jpt[1], jpt[2]);
+}
+
+define void ecpf_jac_fastecmul_api(d, ptg[], n, p, *ret[]){
+
+    auto jlambda_q[], k[], jp1[], jp2[];
+
+    if (d < 0){
+        d = mod(d, n);
+    }
+    if (d > n/2){
+        d = mod(-d, n);
+        ptg[1] = mod(-ptg[1], p);
+    }
+    get_lambda_point_api(endomorphism_beta, ptg[0], ptg[1], p, jlambda_q[]);
+    jlambda_q[2] = 1;
+
+    balanced_length_api(d, endomorphism_a1, endomorphism_b1, endomorphism_a2, endomorphism_b2, n, k[]);
+    ecpf_jac_mul_api(k[0], ptg[], curve_a, curve_p, curve_n, jp1[]);
+    ecpf_jac_mul_api(k[1], jlambda_q[], curve_a, curve_p, curve_n, jp2[]);
+    ecpf_jac_add(jp1[], jp2[], ret[]);
+}
+
+define void ecpf_jac_fastecmul(d){
+
+    auto ptg[], ret[];
+    ptg[0] = curve_gx;
+    ptg[1] = curve_gy;
+    ptg[2] = 1;
+
+    ecpf_jac_fastecmul_api(d, ptg[], curve_n, curve_p, ret[]);
+    ecpf_jac2aff(ret[0], ret[1], ret[2]);
 }
