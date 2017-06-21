@@ -29,43 +29,6 @@ define slope(p, q){
     return slope_api(parr[0], parr[1], qarr[0], qarr[1], curve_p);
 }
 
-define void ecadd_api(px, py, qx, qy, p, *ret[]){
-
-    auto slp;
-
-    if (px == 0){
-
-        ret[0] = qx;
-        ret[1] = qy;
-        return;
-    }
-    if (qx == 0){
-        ret[0] = px;
-        ret[1] = py;
-        return;
-    }
-
-    if (py != mod(-qy, p)){
-
-        slp = mod((qy - py) * invmod((qx - px), p), p);;
-        ret[0] = mod((slp^2 - px - qx),p);
-        ret[1] = mod((slp*(px - ret[0]) - py),p);
-    }
-}
-
-define void ecadd(p, q){
-
-    auto pret[], qret[], ret[];
-    uncompresspoint_api(p, pret[]);
-    uncompresspoint_api(q, qret[]);
-    if ( !ispoint(px, py) || !ispoint(qx, qy)){
-        print "\n ### Not a point\n";
-        return;
-    }
-    ecadd_api(pret[0], pret[1], qret[0], qret[1], curve_p, ret[]);
-    compresspoint(ret[0], ret[1]);
-}
-
 define void ecdouble_api(x, y, p, *ret[]){
 
     auto tangent;
@@ -88,15 +51,76 @@ define void ecdouble(p){
     compresspoint(ret[0], ret[1]);
 }
 
+define void ecadd_api(px, py, qx, qy, p, *ret[]){
+
+    auto slp;
+    if (px == 0){
+
+        ret[0] = qx;
+        ret[1] = qy;
+        return;
+    }
+    if (qx == 0){
+
+        ret[0] = px;
+        ret[1] = py;
+        return;
+    }
+
+#    if (py != mod(-qy, p)){
+
+        slp = mod((qy - py) * invmod((qx - px), p), p);
+        ret[0] = mod((slp^2 - px - qx),p);
+        ret[1] = mod((slp * (px - ret[0]) - py),p);
+        return;
+/*    } else {
+
+        print "else 1\n";
+        if (px == qx){
+            print "else 2\n";
+            ecdouble_api(px, py, curve_p, ret[]);
+            return;
+        }
+    }
+    # infinity
+    ret[0] = 0;
+    ret[1] = 0;
+*/
+}
+
+define void ecadd(p, q){
+
+    auto ptp[], ptq[], pt[];
+    uncompresspoint_api(p, ptp[]);
+    uncompresspoint_api(q, ptq[]);
+    if (ptp[0] == 0 && ptp[1] == 0){
+        compresspoint(ptq[0], ptq[1]);
+        return;
+    }
+    if (ptq[0] == 0 && ptq[1] == 0){
+        compresspoint(ptp[0], ptp[1]);
+        return
+    }
+    if ( !ispoint(ptp[0], ptp[1]) || !ispoint(ptq[0], ptq[1])){
+        print "\n ### Not a point ?\n";
+        return;
+    }
+    if (ptp[0] == ptq[0] && ptp[1] == ptq[1]){
+        ecdouble(p);
+        return;
+    }
+    ecadd_api(ptp[0], ptp[1], ptq[0], ptq[1], curve_p, pt[]);
+    compresspoint(pt[0], pt[1]);
+}
+
 define void ecmul_api(d, gx, gy, n, p, *ret[]){
 
-    auto i, parr[];
+    auto parr[];
 
     parr[0] = gx;
     parr[1] = gy;
     ret[0] = 0;
     ret[1] = 0;
-
     if (d < 0){
         d = mod(d, n);
     }
