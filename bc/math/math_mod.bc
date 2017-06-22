@@ -7,69 +7,52 @@ define mod(a, n){
 
     if (a < 0){
 
-        if (-a == n ){
-            return 0;
-        }
-
         return ((a % n) + n);
     }
-
     return (a % n);
 }
 
 # returns the inverse of a in n
 # (stripped down egcd)
 # https://en.wikipedia.org/wiki/Modular_multiplicative_inverse#Extended_Euclidean_algorithm
-define invmod(a, n){
+# Guide to ECC Algorithm 2.20
+define invmod(a, p){
 
-    auto low_med, high_med, low, high, r, new_r, new_med;
+    auto u, v, x, x1, x2, q, r;
 
-    if (a == 0){
-        return 0;
+    u = mod(a, p);
+    v = p;
+    x1 = 1;
+    x2 = 0;
+    while (u != 1){
+
+        q = v / u;
+        r = v - q*u;
+        x = x2 - q*x1;
+        v = u;
+        u = r;
+        x2 = x1;
+        x1 = x;
     }
-
-    low_med = 1;
-    low = mod(a, n);
-    high = n;
-
-    while (low > 1){
-
-        r = ( high / low);
-        new_r = (high - (low * r));
-        new_med = (high_med - (low_med * r));
-        high = low;
-        high_med = low_med;
-        low = new_r;
-        low_med = new_med;
-    }
-
-    return mod(low_med, n);
+    return mod(x1, p);
 }
 
 # returns base to the power exp mod n
 define powmod(base, exp, n){
 
     auto res, b, e;
-    b = base;
-    e = exp;
 
+    b = mod(base, n);
+    e = mod(exp, n);
     res = 1;
-    b = mod(b, n);
-    while ( e > 1 ){
 
-        if (e % 2 == 1){
+    while (e > 0){
 
+        if (e % 2){
             res = mod((res * b), n);
         }
-
-        e = (e / 2);
         b = mod((b * b), n);
+        e = (e / 2);
     }
-
-    if ( e == 1 ){
-
-        res = mod((res * b), n);
-    }
-
     return res;
 }
