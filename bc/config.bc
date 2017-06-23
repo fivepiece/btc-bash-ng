@@ -1,0 +1,5 @@
+#!/usr/bin/bc
+
+scale=0;
+obase=16;
+ibase=16;

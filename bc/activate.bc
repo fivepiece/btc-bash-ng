@@ -1,0 +1,22 @@
+#!/usr/bin/bc
+
+secp256k1();
+define void set_curve_params(*curve[]){
+
+    curve_p = curve[0];
+    curve_a = curve[1];
+    curve_b = curve[2];
+    curve_g = curve[3];
+    curve_gx = curve[4];
+    curve_gy = curve[5];
+    curve_n = curve[6];
+    curve_h = curve[7];
+}
+
+set_curve_params(secp256k1[]);
+set_endomorphism_vals();
+
+# rootmod(11,3,curve_p);
+# balanced_length_mod(510172B18F7084D65F28D11A694393FCBE959E41A769BC0E8C98A866410E0981, curve_p);
+# fastecmul(curve_n/2);
+# ecadd(curve_g, curve_g);
