@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# knw : number of 0x0 words before the key
+# hash_size : key size in words
+
+define void hmac_api(knw, key, hash_size, *pads[], *hret[]){
+
+    auto keylen;
+
+    keylen = (knw + wordlen(key));
+
+    if ( keylen > hash_size ){
+
+        key = hash(knw, key); # hash() does not exist yet.  done in advance.
+    }
+    if ( keylen < hash_size ){
+
+        key = right_pad(key, hash_size - knw);
+    }
+
+    hret[0] = bwxor(key, pads[0]);
+    hret[1] = bwxor(key, pads[1]);
+
+    # pad(key,hash_size);
+    # pad(o_key_pad,hash_size);
+    # pad(i_key_pad,hash_size);
+}
+
+define void hmac(knw, key, hash_size){
+
+    auto hkey[];
+
+    hmac_api(knw, key, hash_size, hmac_pads[], hkey[]);
+    left_pad(hkey[0], hash_size);
+    left_pad(hkey[1], hash_size);
+}
