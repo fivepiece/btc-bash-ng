@@ -1,0 +1,84 @@
+#!/usr/bin/bc
+
+define void set_init_vals(*ret[]){
+
+    ret[0] = 6A09E667;
+    ret[1] = BB67AE85;
+    ret[2] = 3C6EF372;
+    ret[3] = A54FF53A;
+    ret[4] = 510E527F;
+    ret[5] = 9B05688C;
+    ret[6] = 1F83D9AB;
+    ret[7] = 5BE0CD19;
+}
+
+define void set_round_const(*ret[]){
+
+    ret[0] = 428A2F98;
+    ret[1] = 71374491;
+    ret[2] = B5C0FBCF;
+    ret[3] = E9B5DBA5;
+    ret[4] = 3956C25B;
+    ret[5] = 59F111F1;
+    ret[6] = 923F82A4;
+    ret[7] = AB1C5ED5;
+    ret[8] = D807AA98;
+    ret[9] = 12835B01;
+    ret[A] = 243185BE;
+    ret[B] = 550C7DC3;
+    ret[C] = 72BE5D74;
+    ret[D] = 80DEB1FE;
+    ret[E] = 9BDC06A7;
+    ret[F] = C19BF174;
+    ret[10] = E49B69C1;
+    ret[11] = EFBE4786;
+    ret[12] = 0FC19DC6;
+    ret[13] = 240CA1CC;
+    ret[14] = 2DE92C6F;
+    ret[15] = 4A7484AA;
+    ret[16] = 5CB0A9DC;
+    ret[17] = 76F988DA;
+    ret[18] = 983E5152;
+    ret[19] = A831C66D;
+    ret[1A] = B00327C8;
+    ret[1B] = BF597FC7;
+    ret[1C] = C6E00BF3;
+    ret[1D] = D5A79147;
+    ret[1E] = 06CA6351;
+    ret[1F] = 14292967;
+    ret[20] = 27B70A85;
+    ret[21] = 2E1B2138;
+    ret[22] = 4D2C6DFC;
+    ret[23] = 53380D13;
+    ret[24] = 650A7354;
+    ret[25] = 766A0ABB;
+    ret[26] = 81C2C92E;
+    ret[27] = 92722C85;
+    ret[28] = A2BFE8A1;
+    ret[29] = A81A664B;
+    ret[2A] = C24B8B70;
+    ret[2B] = C76C51A3;
+    ret[2C] = D192E819;
+    ret[2D] = D6990624;
+    ret[2E] = F40E3585;
+    ret[2F] = 106AA070;
+    ret[30] = 19A4C116;
+    ret[31] = 1E376C08;
+    ret[32] = 2748774C;
+    ret[33] = 34B0BCB5;
+    ret[34] = 391C0CB3;
+    ret[35] = 4ED8AA4A;
+    ret[36] = 5B9CCA4F;
+    ret[37] = 682E6FF3;
+    ret[38] = 748F82EE;
+    ret[39] = 78A5636F;
+    ret[3A] = 84C87814;
+    ret[3B] = 8CC70208;
+    ret[3C] = 90BEFFFA;
+    ret[3D] = A4506CEB;
+    ret[3E] = BEF9A3F7;
+    ret[3F] = C67178F2;
+}
+
+# delaying development for now.
+# https://github.com/fivepiece/bc_segfault

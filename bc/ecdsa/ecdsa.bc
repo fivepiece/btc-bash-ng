@@ -1,0 +1,156 @@
+#!/usr/bin/bc
+
+# basic ecdsa functions
+
+define ecdsa_sign_api(r, k, z, d, n){
+
+    auto rval, sval;
+    rval = mod(r, n);
+
+    sval = mod((invmod(k, n) * mod((z + (rval * d)), n)), n);
+    if ( sval > (n / 2) ){
+
+        # return mod(-sval, n);
+        return curve_n - sval;
+    }
+    return sval;
+}
+
+define void ecdsa_sign(k, z, d, *sig[]){
+
+    auto r_pt[], s;
+    fastecmul_api(k, curve_gx, curve_gy, curve_n, curve_p, r_pt[]);
+    sig[0] = mod(r_pt[0], curve_n);
+    sig[1] = ecdsa_sign_api(r_pt[0], k, z, d, curve_n);
+}
+
+define ecdsa_sign_der(k, z, d){
+
+    auto raw_sig[], lenr, bigr, lens, dersig, siglen;
+
+    ecdsa_sign(k, z, d, raw_sig[]);
+    lenr = (wordlen(raw_sig[0])+1)/2;
+    lens = (wordlen(raw_sig[1])+1)/2;
+
+    if (raw_sig[0] >= curve_n/2){
+        bigr = 1;
+    }
+    siglen = 2 + bigr + lenr + 2 + lens;
+    dersig = 3000 + siglen;
+    dersig *= 100;
+    dersig += 02;
+    dersig *= 100;
+    dersig += bigr + lenr;
+    if (bigr == 1){
+        dersig *= 100;
+    }
+    dersig *= 10 ^ (lenr * 2);
+    dersig += raw_sig[0];
+    dersig *= 100;
+    dersig += 02
+    dersig *= 100;
+    dersig += lens;
+    dersig *= 10 ^ (lens * 2);
+    dersig += raw_sig[1];
+
+    return dersig;
+}
+define ecdsa_verify_api(z, x, y, r, s, gx, gy, p, n){
+
+    auto w, u1, u2, u1_pt[], u2_pt[], r_pt[];
+
+    w = invmod(s, n);
+    u1 = mod(z * w, n);
+    u2 = mod(r * w, n);
+
+    fastecmul_api(u1, gx, gy, n, p, u1_pt[]);
+    fastecmul_api(u2, x, y, n, p, u2_pt[]);
+    ecadd_api(u1_pt[0], u1_pt[1], u2_pt[0], u2_pt[1], p, r_pt[]);
+
+    if ( mod(r_pt[0], n) == r ){
+        return r;
+    }
+    return 0;
+}
+
+define ecdsa_verify(z, pubkey, r, s){
+
+    auto pubpt[];
+    uncompresspoint_api(pubkey, pubpt[]);
+    return ecdsa_verify_api(z, pubpt[0], pubpt[1], r, s, curve_gx, curve_gy, curve_p, curve_n);
+}
+
+define void ecdsa_recover_api(z, r, s, *ret[]){
+
+    auto ry_arr[], invr, r1_pt[], r2_pt[], sr1_pt[], sr2_pt[], zg_pt[], mul1_pt[], mul2_pt[], rmul1_pt[], rmul2_pt[];
+
+    z = mod(-z, curve_n);
+    r = mod(r, curve_n);
+    gety_api(r, ry_arr[]);
+    invr = invmod(r, curve_n);
+
+    fastecmul_api(s, r, ry_arr[0], curve_n, curve_p, r1_pt[]);
+
+    fastecmul_api(s, r, ry_arr[1], curve_n, curve_p, r2_pt[]);
+
+    fastecmul_api(z, curve_gx, curve_gy, curve_n, curve_p, zg_pt[]);
+
+    ecadd_api(r1_pt[0], r1_pt[1], zg_pt[0], zg_pt[1], curve_p, mul1_pt[]);
+
+    ecadd_api(r2_pt[0], r2_pt[1], zg_pt[0], zg_pt[1], curve_p, mul2_pt[]);
+
+    fastecmul_api(invr, mul1_pt[0], mul1_pt[1], curve_n, curve_p, rmul1_pt[]);
+
+    fastecmul_api(invr, mul2_pt[0], mul2_pt[1], curve_n, curve_p, rmul2_pt[]);
+
+    ret[0] = rmul1_pt[0];
+    ret[1] = rmul1_pt[1];
+    ret[2] = rmul2_pt[0];
+    ret[3] = rmul2_pt[1];
+}
+
+define void ecdsa_recover(z, r, s){
+
+    auto ret[];
+    ecdsa_recover_api(z, r, s, retarr[]);
+
+    compresspoint(retarr[0],retarr[1]);
+    compresspoint(retarr[2],retarr[3]);
+}
+
+
+# some useful algebra
+
+define ecdsa_getk(r, s, z, d, n){
+
+    return mod((invmod(s,n) * mod((z+(r*d)),n)),n);
+}
+
+define ecdsa_getz_api(r, s, k, d, n){
+
+    return mod((mod(k*s,n) - mod(r*d,n)),n);
+}
+
+define ecdsa_getz(s, k, d){
+
+    auto r_pt[];
+    fastecmul_api(k, curve_gx, curve_gy, curve_n, curve_p, r_pt[]);
+    return ecdsa_getz_api(mod(r_pt[0], curve_n), s, k, d, curve_n);
+}
+
+define ecdsa_getd_api(r, s, k, z, n){
+
+    return mod(mod((s*k)-z,n) * invmod(r,n),n);
+}
+
+define ecdsa_getd(s, k, z){
+
+    auto r_pt[];
+    fastecmul_api(k, curve_gx, curve_gy, curve_n, curve_p, r_pt[]);
+    return ecdsa_getd_api(mod(r_pt[0], curve_n), s, k, z, curve_n);
+}
+
+define ecdsa_getr(k, s, z, d, n){
+
+    return mod(invmod(d,n) * mod((k*s) - z,n),n);
+}

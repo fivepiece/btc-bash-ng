@@ -1,0 +1,128 @@
+#!/usr/bin/bc
+
+# frobenius endomorphism
+# https://bitcointalk.org/index.php?topic=3238.0
+# Guide to Elliptic Curve Cryptography -
+# Hankerson, Menezes, Vanstone
+
+define get_decimal_sqrt(n){
+
+    auto base;
+    base = 2;
+    for (i=1; base<(2 ^ (wordlen(n) * 2)); i++){
+
+        base = powmod(2, i, n);
+    }
+
+    return base-1;
+}
+
+# 2.19 Extended Euclidean algorithm for integers
+define void set_balanced_mul_vals_api(a, b, n, *ret[]){
+
+    auto s[], t[], r[], quotient, prov, sqrtn, sflag, i, l;
+    s[1] = 0; s[0] = 1;
+    t[1] = 1; t[0] = 0;
+    r[1] = b; r[0] = a;
+    sqrtn = get_decimal_sqrt(n);
+    sflag = 1;
+
+    i = 1;
+    while (r[i] != 0){
+        # print "r[",i-1,"] : ", r[i-1],"\n";
+        # print "r[",i,"] : ", r[i],"\n";
+        quotient = r[i-1] / r[i]; 
+        prov = r[i];
+        r[i] = mod(r[i-1] - mod(quotient*prov, n), n);
+        r[i-1] = prov;
+        prov = s[i];
+        s[i] = mod(s[i-1] - mod(quotient*prov, n), n);
+        s[i-1] = prov;
+        prov = t[i];
+        t[i] = mod(t[i-1] - mod(quotient*prov, n), n);
+        t[i-1] = prov;
+        # print "i : ", i, "\n";
+        # print "r[",i-1,"] : ", r[i-1],"\n";
+        # print "r[",i,"] : ", r[i],"\n";
+        if ((r[i] < sqrtn) && sflag ){
+            l = i-1;
+            sflag = 0;
+        }
+        r[i+2] = r[i]
+        s[i+2] = s[i]
+        t[i+2] = t[i]
+        r[i+1] = r[i-1]
+        s[i+1] = s[i-1]
+        t[i+1] = t[i-1]
+        i+=2;
+    }
+    # print "l : ", l, "\n";
+    # print "r[l] : ", r[l], "\n";
+    # print "s[l] : ", s[l], "\n";
+    # print "t[l] : ", t[l], "\n";
+    # print "r[l+1] : ", r[l+1], "\nr[l+2] : ", r[l+2], "\n";
+    # print "s[l+1] : ", s[l+1], "\ns[l+2] : ", s[l+2], "\n";
+    # print "t[l+1] : ", t[l+1], "\nt[l+2] : ", t[l+2], "\n";
+    #a1 = r[l+1];
+    #b1 = -t[l+1];
+    ret[0] = r[l+1];
+    ret[1] = -t[l+1];
+    if (mod((r[l]^2 + t[l]^2), n) <= mod((r[l+2]^2 + t[l+2]^2), n)) {
+        #a2 = r[l];
+        #b2 = -t[l];
+        ret[2] = r[l];
+        ret[3] = mod(-t[l], n);
+    } else {
+        #a2 = r[l+2];
+        #b2 = -t[l+2];
+        ret[2] = r[l+2];
+        ret[3] = mod(-t[l+2], n);
+    }
+    # b2 = mod(b2,n);
+    # ret[0] = a1; ret[1] = b1;
+    # ret[2] = a2; ret[3] = b2;
+}
+
+define void set_endomorphism_vals(){
+
+    auto roots[], ret[];
+    rootmod_api(1, 3, curve_p, roots[]);
+    endomorphism_beta = roots[2];
+
+    rootmod_api(1, 3, curve_n, roots[]);
+    endomorphism_lambda = roots[3];
+
+    set_balanced_mul_vals_api(curve_n, endomorphism_lambda, curve_n, ret[]);
+    endomorphism_a1 = ret[0];
+    endomorphism_b1 = ret[1];
+    endomorphism_a2 = ret[2];
+    endomorphism_b2 = ret[3];
+}
+
+define void get_lambda_point_api(beta, gx, gy, pp, *ret[]){
+
+    ret[0] = mod(beta * gx, curve_p); # Q'_x
+    ret[1] = gy;                      # Q'_y
+}
+
+# 3.74 Balanced length-two representation of a multiplier
+define void balanced_length_api(k, a1, b1, a2, b2, n, *ret[]){
+
+    auto c1, c2, k1, k2;
+
+    c1 = (b2 * k)/n;
+    c2 = (-b1 * k)/n;
+
+    k1 = (k - c1*a1 - c2*a2);
+    k2 = (-c1*b1 - c2*b2);
+
+    ret[0] = k1;
+    ret[1] = k2;
+}
+
+define void balanced_length_mod(k, n){
+
+    auto ret[];
+    balanced_length_api(k, endomorphism_a1, endomorphism_b1, endomorphism_a2, endomorphism_b2, n, ret[]);
+    print "k1 : ", ret[0], "\nk2 : ", ret[1], "\n";
+}

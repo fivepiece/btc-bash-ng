@@ -1,0 +1,64 @@
+#!/usr/bin/bc
+
+# some basic useful functions
+
+define max(a, b){
+
+    if ( a > b ){
+        return a
+    } else {
+        return b
+    }
+}
+
+define min(a, b){
+
+    if ( a < b ){
+        return a
+    } else {
+        return b
+    }
+}
+
+define void left_pad(n, len){
+
+    auto i;
+    i = wordlen(n);
+
+    while ( len-i >= 1F ){
+
+        print "0000000000000000000000000000000";
+        i += 1F;
+    }
+
+    while ( len-i >= F ){
+
+        print "000000000000000";
+        i += F;
+    }
+
+    while ( len-i >= 7 ){
+
+        print "0000000";
+        i += 7;
+    }
+
+    while ( len-i >= 3 ){
+
+        print "000";
+        i += 3;
+    }
+
+    while ( len-i >= 1 ){
+
+        print "0";
+        i += 1;
+    }
+
+    n;
+}
+
+define right_pad(n, len){
+
+    return n*10^(len-wordlen(n));
+}

@@ -1,0 +1,149 @@
+#!/usr/bin/bc
+
+# functions for points on elliptic curves
+
+define void gety_fast_api(x, *yarr[]){
+
+    auto q, z, ysq, tmp;
+
+    q = (curve_p - 1) / 2;
+    z = invmod(2, q);
+    ysq = mod((powmod(x, 3, curve_p) + (curve_a * x) + curve_b), curve_p);
+
+    tmp = powmod(ysq, z, curve_p);
+    if (tmp % 2 == 0){
+
+        yarr[0] = tmp;
+        yarr[1] = mod(-tmp, curve_p);
+    } else {
+        yarr[0] = mod(-tmp, curve_p);
+        yarr[1] = tmp;
+    }
+}
+
+define void getyfromx_api(x, *yvals[]){
+
+    auto roots[];
+    rootmod_api(powmod(x, 3, curve_p) + curve_b, 2, curve_p, roots[]);
+    yvals[0] = roots[1];
+    yvals[1] = roots[2];
+}
+
+define void getxfromy_api(y, *ret[]){
+
+    auto roots[];
+    rootmod_api(powmod(y, 2, curve_p) - curve_b, 3, curve_p, roots[]);
+    ret[0] = roots[1];
+    ret[1] = roots[2];
+    ret[2] = roots[3];
+}
+
+define getyfromx(x){
+
+    auto ret[];
+    getyfromx_api(x, ret[]);
+
+    return ret[1];
+}
+
+define getxfromy(y){
+
+    auto ret[];
+    getxfromy_api(y, ret[]);
+
+    return ret[1];
+}
+
+define void gety_api(x, *yvals[]){
+
+    auto ret[];
+    if (curve_p % 4 == 3){
+
+        gety_fast_api(x, ret[]);
+    } else {
+
+        getyfromx_api(x, ret[]);
+    }
+
+    yvals[0] = ret[0];
+    yvals[1] = ret[1];
+}
+
+define void gety(x){
+
+    auto ret[];
+    gety_api(x, ret[]);
+    print "\n# gety\n# Y1 : ", ret[0], "\n# Y2 : ", ret[1], "\n";
+}
+
+define ispoint_api(x, y, a, b, p){
+
+    auto ysq, xcb, ax, ans;
+
+    ysq = powmod(y, 2, p);
+    xcb = powmod(x, 3, p);
+    ax = mod(a * x, p);
+
+    ans = mod( mod((ysq - xcb - ax - b), p), p);
+    return (ans == 0);
+}
+
+define ispoint(x, y){
+
+    return ispoint_api(x, y, curve_a, curve_b, curve_p);
+}
+
+define compresspoint_api(x, y){
+
+    if ( ispoint(x, y) ){
+
+        if (y % 2 == 1){
+
+            return (x + 3*(10 ^ curve_words));
+        } else {
+
+            return (x + 2*(10 ^ curve_words));
+        }
+    } else {
+        print "\n ### Not a point\n";
+        return 0;
+    }
+}
+
+define void compresspoint(x, y){
+
+    auto res;
+
+    res = compresspoint_api(x, y);
+    print "0", res, "\n";
+}
+
+define void uncompresspoint_api(x, *point[]){
+
+    auto tmp[];
+
+    gety_api(( mod(x, 10 ^ curve_words) ), tmp[]);
+
+    if ( x > ( 3*(10 ^ curve_words) ) ){
+
+        point[0] = ( x - 3*(10 ^ curve_words) );
+        point[1] = tmp[1];
+    } else if ( x > ( 2*(10 ^ curve_words) ) ){
+
+        point[0] = ( x - 2*(10 ^ curve_words) );
+        point[1] = tmp[0];
+    } else {
+
+        point[0] = 0;
+        point[1] = 0;
+    }
+}
+
+define void uncompresspoint(x){
+
+    auto ret[];
+
+    uncompresspoint_api(x, ret[]);
+    left_pad(ret[0], curve_words);
+    left_pad(ret[1], curve_words);
+}

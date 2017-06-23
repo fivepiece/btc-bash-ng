@@ -1,0 +1,175 @@
+#!/usr/bin/bc
+
+# functions for operations on an elliptic curve
+
+define slope_api(px, py, qx, qy, p){
+
+    auto num, den;
+
+    if (qy - py != 0){
+
+        num = mod((qy - py),p);
+        den = invmod((qx - px),p);
+
+    } else {
+
+	    num = mod((3 * px^2 + curve_a),p);
+	    den = invmod((2 * py),p);
+    }
+
+    return (mod((num * den),p));
+}
+
+define slope(p, q){
+
+    auto parr[], qarr[];
+
+    uncompresspoint_api(p, parr[]);
+    uncompresspoint_api(q, qarr[]);
+    return slope_api(parr[0], parr[1], qarr[0], qarr[1], curve_p);
+}
+
+define void ecdouble_api(x, y, p, *ret[]){
+
+    auto tangent;
+
+    tangent = mod((3 * x^2 + curve_a) * invmod(2 * y, p), curve_p);
+    ret[0] = mod(tangent^2 - 2*x, p);
+    ret[1] = mod((tangent * (x - ret[0]) - y),p);
+}
+
+define void ecdouble(p){
+
+    auto pt[], ret[];
+
+    uncompresspoint_api(p, pt[]);
+    if (!ispoint(pt[0], pt[1])){
+        print "\n ### Not a point\n";
+        return;
+    }
+    ecdouble_api(pt[0], pt[1], curve_p, ret[]);
+    compresspoint(ret[0], ret[1]);
+}
+
+define void ecadd_api(px, py, qx, qy, p, *ret[]){
+
+    auto slp;
+    if (px == 0){
+
+        ret[0] = qx;
+        ret[1] = qy;
+        return;
+    }
+    if (qx == 0){
+
+        ret[0] = px;
+        ret[1] = py;
+        return;
+    }
+
+#    if (py != mod(-qy, p)){
+
+        slp = mod((qy - py) * invmod((qx - px), p), p);
+        ret[0] = mod((slp^2 - px - qx),p);
+        ret[1] = mod((slp * (px - ret[0]) - py),p);
+        return;
+/*    } else {
+
+        print "else 1\n";
+        if (px == qx){
+            print "else 2\n";
+            ecdouble_api(px, py, curve_p, ret[]);
+            return;
+        }
+    }
+    # infinity
+    ret[0] = 0;
+    ret[1] = 0;
+*/
+}
+
+define void ecadd(p, q){
+
+    auto ptp[], ptq[], pt[];
+    uncompresspoint_api(p, ptp[]);
+    uncompresspoint_api(q, ptq[]);
+    if (ptp[0] == 0 && ptp[1] == 0){
+        compresspoint(ptq[0], ptq[1]);
+        return;
+    }
+    if (ptq[0] == 0 && ptq[1] == 0){
+        compresspoint(ptp[0], ptp[1]);
+        return
+    }
+    if ( !ispoint(ptp[0], ptp[1]) || !ispoint(ptq[0], ptq[1])){
+        print "\n ### Not a point ?\n";
+        return;
+    }
+    if (ptp[0] == ptq[0] && ptp[1] == ptq[1]){
+        ecdouble(p);
+        return;
+    }
+    ecadd_api(ptp[0], ptp[1], ptq[0], ptq[1], curve_p, pt[]);
+    compresspoint(pt[0], pt[1]);
+}
+
+define void ecmul_api(d, gx, gy, n, p, *ret[]){
+
+    auto parr[];
+
+    parr[0] = gx;
+    parr[1] = gy;
+    ret[0] = 0;
+    ret[1] = 0;
+    if (d < 0){
+        d = mod(d, n);
+    }
+    if (d > n/2){
+        d = mod(-d, n);
+        parr[1] = mod(-gy, p);
+    }
+
+    while (d > 0){
+
+        if (d % 2){
+ 
+	        ecadd_api(parr[0], parr[1], ret[0], ret[1], curve_p, ret[]);
+        }
+        ecdouble_api(parr[0], parr[1], curve_p, parr[]);
+        d /= 2;
+    }
+}
+
+define void ecmul(d){
+
+    auto ret[];
+
+    ecmul_api(d, curve_gx, curve_gy, curve_n, curve_p, ret[]);
+    compresspoint(ret[0], ret[1]);
+}
+
+define void fastecmul_api(d, qx, qy, n, p, *ret[]){
+
+    auto lambda_q[], k[], p1[], p2[];
+
+    if (d < 0){
+        d = mod(d, n);
+    }
+    if (d > n/2){
+        d = mod(-d, n);
+        qy = mod(-qy, p);
+    }
+    get_lambda_point_api(endomorphism_beta, qx, qy, p, lambda_q[]);
+
+    balanced_length_api(d, endomorphism_a1, endomorphism_b1, endomorphism_a2, endomorphism_b2, n, k[]);
+    ecmul_api(k[0] ,qx, qy, n, p, p1[]);
+    ecmul_api(-k[1], lambda_q[0], -lambda_q[1], n, p, p2[]);
+    ecadd_api(p1[0], p1[1], p2[0], p2[1], p, ret[]);
+}
+
+define void fastecmul(d){
+
+    auto ret[];
+    fastecmul_api(d, curve_gx, curve_gy, curve_n, curve_p, ret[]);
+    compresspoint(ret[0],ret[1]);
+}

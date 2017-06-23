@@ -1,0 +1,171 @@
+#!/usr/bin/bc
+
+# jacobian coordinates on prime curves
+
+define void ecpf_aff2jac_api(x, y, *jpt[]){
+
+    jpt[0] = x;
+    jpt[1] = y;
+    jpt[2] = 1;
+}
+
+define void ecpf_aff2jac(p, *jpt[]){
+
+    auto pt[];
+    uncompresspoint_api(p, pt[]);
+    ecpf_aff2jac_api(pt[0], pt[1], jpt[]);
+}
+
+define void ecpf_jac2aff_api(jpx, jpy, jpz, p, *pt[]){
+
+    pt[0] = mod(jpx * invmod(powmod(jpz, 2, curve_p), curve_p), curve_p);
+    pt[1] = mod(jpy * invmod(powmod(jpz, 3, curve_p), curve_p), curve_p);
+}
+
+define void ecpf_jac2aff(*jpt[], *pt[]){
+
+    ecpf_jac2aff_api(jpt[0], jpt[1], jpt[2], curve_p, pt[]);
+}
+
+define void ecpf_jac_double_api(jpx, jpy, jpz, a, p, *jpt[]){
+
+    auto s, m;
+
+    if ((jpx == 1 && jpy == 1 && jpz == 0) || jpy == 0){
+        jpt[0] = 1;
+        jpt[1] = 1;
+        jpt[2] = 0;
+        return;
+    }
+    s = mod(4 * jpx * jpy^2, p);
+    m = mod((3 * jpx^2) + (a * jpy^4), p);
+    jpt[0] = mod(m^2 - 2*s, p);
+    jpt[1] = mod(m * (s - jpt[0]) - 8*jpy^4, p);
+    jpt[2] = mod(2 * jpy * jpz, p);
+}
+
+define void ecpf_jac_double(*jin[], *jpt[]){
+
+    ecpf_jac_double_api(jin[0], jin[1], jin[2], curve_a, curve_p, jpt[]);
+}
+
+define void ecpf_jac_add_api(jpx, jpy, jpz, jqx, jqy, jqz, a, p, *jpt[]){
+
+    auto u1, u2, s1, s2, h, r;
+
+    if (jpx == 1 && jpy == 1 && jpz == 0){
+        jpt[0] = jqx;
+        jpt[1] = jqy;
+        jpt[2] = jqz;
+        return;
+    }
+    if (jqx == 1 && jqy == 1 && jqz == 0){
+        jpt[0] = jpx;
+        jpt[1] = jpy;
+        jpt[2] = jpz;
+        return;
+    }
+    u1 = mod(jpx * jqz^2, p);
+    u2 = mod(jqx * jpz^2, p);
+    s1 = mod(jpy * jqz^3, p);
+    s2 = mod(jqy * jpz^3, p);
+    if (u1 == u2){
+        if (s1 != s2){
+            jpt[0] = 1;
+            jpt[1] = 1;
+            jpt[2] = 0;
+            return;
+        } else {
+            ecpf_jac_double_api(jpx, jpy, jpz, a, p, jpt[]);
+            return;
+        }
+    }
+    h = mod(u2 - u1, p);
+    r = mod(s2 - s1, p);
+    jpt[0] = mod(r^2 - h^3 - (2 * u1 * h^2), p);
+    jpt[1] = mod(r * (u1 * h^2 - jpt[0]) - (s1 * h^3), p);
+    jpt[2] = mod(h * jpz * jqz, p);
+}
+
+define void ecpf_jac_add(*jp[], *jq[], *jpt[]){
+
+    ecpf_jac_add_api(jp[0], jp[1], jp[2], jq[0], jq[1], jq[2], curve_a, curve_p, jpt[]);
+}
+
+define void ecpf_jac_mul_api(d, gx, gy, gz, a, p, n, *jpt[]){
+
+    auto jtmp[];
+
+    jtmp[0] = gx;
+    jtmp[1] = gy;
+    jtmp[2] = gz;
+    jpt[0] = 1;
+    jpt[1] = 1;
+    jpt[2] = 0;
+    if (d < 0){
+        d = mod(d, n);
+    }
+    if (d > n/2){
+        d = mod(-d, n);
+        jtmp[1] = mod(-gy, p);
+    }
+
+    while (d > 0){
+
+        if (d % 2){
+            ecpf_jac_add_api(jtmp[0], jtmp[1], jtmp[2], jpt[0], jpt[1], jpt[2], a, p, jpt[]);
+        }
+        ecpf_jac_double_api(jtmp[0], jtmp[1], jtmp[2], a, p, jtmp[]);
+        d /= 2;
+    }
+}
+
+define void ecpf_jac_mul(d, *jpt[]){
+
+    ecpf_jac_mul_api(d, curve_gx, curve_gy, 1, curve_a, curve_p, curve_n, jpt[]);
+}
+
+define void jac_ecmul(d){
+
+    auto jpt[], pt[];
+
+    ecpf_jac_mul(d, jpt[]);
+    ecpf_jac2aff(jpt[], pt[]);
+    compresspoint(pt[0], pt[1]);
+}
+
+define void ecpf_jac_fastecmul_api(d, gx, gy, gz, a, n, p, *jpt[]){
+
+    auto jlq[], k[], jp1[], jp2[];
+
+    if (d < 0){
+        d = mod(d, n);
+    }
+    if (d > n/2){
+        d = mod(-d, n);
+        gy = mod(-gy, p);
+    }
+    get_lambda_point_api(endomorphism_beta, gx, gy, p, jlq[]);
+    jlq[2] = 1;
+
+    balanced_length_api(d, endomorphism_a1, endomorphism_b1, endomorphism_a2, endomorphism_b2, n, k[]);
+    ecpf_jac_mul_api(k[0], gx, gy, gz, curve_a, curve_p, curve_n, jp1[]);
+    ecpf_jac_mul_api(-k[1], jlq[0], -jlq[1], jlq[2], curve_a, curve_p, curve_n, jp2[]);
+    ecpf_jac_add(jp1[], jp2[], jpt[]);
+}
+
+define void ecpf_jac_fastecmul(d, *jpt[]){
+
+    auto ptg[];
+
+    ecpf_jac_fastecmul_api(d, curve_gx, curve_gy, 1, curve_a, curve_n, curve_p, jpt[]);
+}
+
+define void jac_fecmul(d){
+
+    auto ret[], pt[];
+
+    ecpf_jac_fastecmul(d, ret[]);
+    ecpf_jac2aff(ret[], pt[]);
+    compresspoint(pt[0], pt[1]);
+}
