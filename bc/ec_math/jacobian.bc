@@ -150,7 +150,7 @@ define void ecpf_jac_fastecmul_api(d, gx, gy, gz, a, n, p, *jpt[]){
 
     balanced_length_api(d, endomorphism_a1, endomorphism_b1, endomorphism_a2, endomorphism_b2, n, k[]);
     ecpf_jac_mul_api(k[0], gx, gy, gz, curve_a, curve_p, curve_n, jp1[]);
-    ecpf_jac_mul_api(k[1], jlq[0], jlq[1], jlq[2], curve_a, curve_p, curve_n, jp2[]);
+    ecpf_jac_mul_api(-k[1], jlq[0], -jlq[1], jlq[2], curve_a, curve_p, curve_n, jp2[]);
     ecpf_jac_add(jp1[], jp2[], jpt[]);
 }
 
