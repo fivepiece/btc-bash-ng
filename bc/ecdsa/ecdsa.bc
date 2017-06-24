@@ -93,7 +93,7 @@ define void ecdsa_recover_api(z, r, s, *ret[]){
     auto ry_arr[], invr, r1_pt[], r2_pt[], sr1_pt[], sr2_pt[], zg_pt[], mul1_pt[], mul2_pt[], rmul1_pt[], rmul2_pt[];
 
     z = mod(-z, curve_n);
-    r = mod(r, curve_n);
+    # r = mod(r, curve_n);
     gety_api(r, ry_arr[]);
     invr = invmod(r, curve_n);
 
