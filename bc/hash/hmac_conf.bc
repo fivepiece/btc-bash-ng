@@ -12,8 +12,24 @@ define void hmac_pads(blocklen, *pads[]){
     }
 }
 
-define void set_hmac_sha256(){
+define set_hmac_sha256(){
 
-    sha256_block_len = 80;
-    hmac_pads(sha256_block_len, hmac_pads[]);
+    hmac_pads(80, hmac_pads[]);
+    return 80;
+}
+
+define set_hmac_sha224(){
+
+    return set_hmac_sha256();
+}
+
+define set_hmac_sha384(){
+
+    hmac_pads(100, hmac_pads[]);
+    return 100;
+}
+
+define set_hmac_sha512(){
+
+    return set_hmac_sha384();
 }

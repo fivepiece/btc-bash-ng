@@ -1,15 +1,28 @@
 #!/bin/bash
 
-hmac() { # https://www.ietf.org/rfc/rfc2104.txt
+hmac_blocklen()
+{
+    case "$1" in
+        sha224|sha256)
+            echo '80'
+            ;;
+        sha384|sha512)
+            echo '100'
+            ;;
+    esac
+}
 
-    local -u key="$1" text
-    #key="${1^^}"
-    #text="${2^^}"
+# https://www.ietf.org/rfc/rfc2104.txt
+hmac()
+{
+    local -u key="$1" text="$2"
+    local -l hashfunc="$3" blocklen
+    read blocklen < <( hmac_blocklen "${hashfunc}" )
 
     # keys larger than the blocksize are hashed
-    if (( ${#key} > $((16#${hashBlockLen})) ))
+    if (( ${#key} > $((16#${blocklen})) ))
     then
-        read key < <( "${hashfun}" "${key}" )
+        read key < <( "${hashfunc}" "${key}" )
     fi
 
     local -u knw
@@ -25,20 +38,24 @@ hmac() { # https://www.ietf.org/rfc/rfc2104.txt
     # pads[1] = opad
     # pads[2] = ipad
     #
-    readarray -t pads < <( bc <<<"set_hmac_pads(${hashBlockLen}); hmac(${#knw}, ${key}, ${hashBlockLen});" )
+    readarray -t pads < <( bc <<<"hmac(${#knw}, ${key}, set_hmac_${hashfunc}());" )
 
     # step (3)
     #text="${pads[2]}${text}"
 
     # steps (3) (4)
-    read text < <( "${hashfun}" "${pads[2]}${2}" )
+    read text < <( "${hashfunc}" "${pads[1]}${text}" )
 
     # step (6)
     #text="${pads[1]}${text}"
 
     # steps (6) (7)
-    #read text < <( "${hashfun}" "${pads[1]}${text}" )
+    #read text < <( "${hashfunc}" "${pads[1]}${text}" )
 
-    ${hashfun} "${pads[1]}${text}"
-    #printf '%s\n' "${text}"
+    ${hashfunc} "${pads[0]}${text}"
+}
+
+hmac_sha256()
+{
+    hmac "$1" "$2" 'sha256'
 }

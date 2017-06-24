@@ -31,7 +31,7 @@ lpadhexstr()
 # setting a chunk size is only possible with $2
 # $1 : hexstr
 # $2 : n
-revchunks ()
+revchunks()
 {
     local -u hexstr
     local -i chunk

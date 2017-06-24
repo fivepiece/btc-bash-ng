@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./input_hexhash.sh
+source "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && echo $PWD )/input_hexhash.sh"
 
 test_sha224()
 {

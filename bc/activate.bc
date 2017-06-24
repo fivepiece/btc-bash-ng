@@ -15,7 +15,7 @@ define void set_curve_params(*curve[]){
 
 set_curve_params(secp256k1[]);
 set_endomorphism_vals();
-set_hmac_sha256();
+# set_hmac_sha256();
 # rootmod(11,3,curve_p);
 # balanced_length_mod(510172B18F7084D65F28D11A694393FCBE959E41A769BC0E8C98A866410E0981, curve_p);
 # fastecmul(curve_n/2);
