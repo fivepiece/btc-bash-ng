@@ -24,15 +24,14 @@ define void ecdsa_sign(k, z, d, *sig[]){
     sig[1] = ecdsa_sign_api(r_pt[0], k, z, d, curve_n);
 }
 
-define ecdsa_sign_der(k, z, d){
+define ecdsa_sig2der(r, s){
 
-    auto raw_sig[], lenr, bigr, lens, dersig, siglen;
+    auto lenr, bigr, lens, dersig, siglen;
 
-    ecdsa_sign(k, z, d, raw_sig[]);
-    lenr = (wordlen(raw_sig[0])+1)/2;
-    lens = (wordlen(raw_sig[1])+1)/2;
+    lenr = (wordlen(r)+1)/2;
+    lens = (wordlen(s)+1)/2;
 
-    if (raw_sig[0] >= curve_n/2){
+    if (r >= curve_n/2){
         bigr = 1;
     }
     siglen = 2 + bigr + lenr + 2 + lens;
@@ -45,16 +44,25 @@ define ecdsa_sign_der(k, z, d){
         dersig *= 100;
     }
     dersig *= 10 ^ (lenr * 2);
-    dersig += raw_sig[0];
+    dersig += r;
     dersig *= 100;
     dersig += 02
     dersig *= 100;
     dersig += lens;
     dersig *= 10 ^ (lens * 2);
-    dersig += raw_sig[1];
+    dersig += s;
 
     return dersig;
 }
+
+define ecdsa_sign_der(k, z, d){
+
+    auto raw_sig[], lenr, bigr, lens, dersig, siglen;
+
+    ecdsa_sign(k, z, d, raw_sig[]);
+    return ecdsa_sig2der(raw_sig[0], raw_sig[1]);
+}
+
 define ecdsa_verify_api(z, x, y, r, s, gx, gy, p, n){
 
     auto w, u1, u2, u1_pt[], u2_pt[], r_pt[];
