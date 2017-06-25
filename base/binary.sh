@@ -35,6 +35,6 @@ hex2bin()
 # get n bytes from urandom
 randhex()
 {
-    bin2hex < <(str2bytes -N"${1}" /dev/urandom);
+    bin2hex -n"$1" /dev/urandom
     echo 1>&2
 }
