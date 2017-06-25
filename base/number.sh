@@ -1,7 +1,5 @@
 #!/bin/bash
 
-alias bc_clean="BC_ENV_ARGS='-q' BC_LINE_LENGTH=0 bc"
-
 # [x]   = x - {x} ,
 # r < 0 ? : --[x]
 int_floor()
