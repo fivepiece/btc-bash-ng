@@ -29,13 +29,12 @@ base58enc()
 
     zeroprefix="${hexstr%%${hexstr/*(00)/}}"
     zeroprefix="${zeroprefix//00/1}"
-    printf "%s%s" "${zeroprefix}"
+    printf "%s" "${zeroprefix}"
 
     read b58out < <( bc_clean <<<" \
         obase = 58; \
         ibase = 16; \
         ${hexstr};" )
-    # echo "${b58out}"
     for b58 in ${b58out}; do
         printf '%s' "${_b58Enc[$((10#${b58}))]}"
     done
