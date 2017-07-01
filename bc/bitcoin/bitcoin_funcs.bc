@@ -1,0 +1,108 @@
+
+define compsize(nsize){
+
+    if (nsize < 10){
+
+        print 0;
+        return nsize;
+    } # leading zero
+    if (nsize < FD){
+
+        return nsize;
+    }
+    if (nsize <= FFFF){
+
+        return FD0000+nsize;
+    }
+    if (nsize <= FFFFFFFF){
+
+        return FE00000000+nsize;
+    }
+    if (nsize <= FFFFFFFFFFFFFFFF){
+
+        return FF0000000000000000+nsize;
+    }
+}
+
+define void wsize2pushop(wsize){
+
+    auto bsize
+    if ( wsize % 2 != 0 ){
+
+        print "Error odd wordsize\n";
+        return;
+    }
+    bsize = wsize / 2;
+    if ( bsize < 4C ){
+
+        print "0x\n";
+        left_pad(bsize,2);
+        return;
+    }
+    if ( bsize < 100 ){
+
+        print "PUSHDATA1 0x\n"
+        left_pad(bsize,2);
+        return;
+    }
+    if ( bsize < 10000 ){
+
+        print "PUSHDATA2 0x\n"
+        left_pad(bsize,4);
+        return;
+    }
+    if ( bsize < 100000000 ){
+
+        print "PUSHDATA4 0x\n"
+        left_pad(bsize,8);
+        return;
+    }
+    print "Error data push too big\n";
+    return;
+}
+
+
+define void ser_num(n){
+
+    auto num, order, msb, lsb, sep; # lsb is all bytes after msb
+                                    # sep is where msb ends and lsb starts
+    if ( n == 0 ){
+
+        print "00\n";
+        return;
+    }
+    num = n;
+    if ( num < 0 ){
+
+        num = ( num * -1 );
+    }
+    order = wordlen(num);
+    sep = (order - (2 - (order % 2) )); # yuck..
+    msb = num / (10^sep);
+    lsb = num % (10^sep);
+
+    if ( msb >= 80 ){
+
+        if ( n > 0 ){
+
+            print "00";
+            left_pad(num, order+(order % 2));
+            return;
+        } else {
+
+            print "80";
+            left_pad(num, order+(order % 2));
+            return;
+        }
+    } else {
+
+        if ( n < 0) {
+
+            left_pad( (msb+80)*(10^sep)+lsb, sep+2);
+            return;
+        }
+
+        left_pad(num, order+(order % 2));
+        return;
+    }
+}
