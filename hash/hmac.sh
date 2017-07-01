@@ -38,7 +38,7 @@ hmac()
     # pads[1] = opad
     # pads[2] = ipad
     #
-    readarray -t pads < <( bc_hmac <<<"hmac(${#knw}, ${key}, set_hmac_${hashfunc}());" )
+    readarray -t pads < <( bc_hmac <<<"hmac(${#knw}, ${key}, set_hmac_${hashfunc}());" 2>/dev/null)
 
     # step (3)
     #text="${pads[2]}${text}"
