@@ -31,7 +31,7 @@ define ecdsa_sig2der(r, s){
     lenr = (wordlen(r)+1)/2;
     lens = (wordlen(s)+1)/2;
 
-    if (r >= curve_n/2){
+    if ( (r / (10^(wordlen(r) - 2))) > 7F ){
         bigr = 1;
     }
     siglen = 2 + bigr + lenr + 2 + lens;
