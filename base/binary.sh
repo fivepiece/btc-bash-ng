@@ -36,5 +36,5 @@ hex2bin()
 randhex()
 {
     bin2hex -n"$1" /dev/urandom
-    echo 1>&2
+    echo
 }
