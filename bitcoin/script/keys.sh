@@ -28,9 +28,11 @@ key_priv2pub ()
 
 key_priv2wif()
 {
-    local -u privkey keyhash
+    local -u privkey="${1^^}" keyhash
 
-    read privkey < <( left_pad "${1^^}" 64 )
+    if (( ${#1} < 64 )); then
+        read privkey < <( left_pad "${privkey}" 64 )
+    fi
     read keyhash < <( hash256 "${privkeyVer}${privkey}" )
     keyhash="${keyhash:0:8}"
 
