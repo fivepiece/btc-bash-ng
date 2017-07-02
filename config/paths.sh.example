@@ -1,0 +1,15 @@
+#!/bin/bash
+conf_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && echo $PWD )"
+
+# path to the patched bc binary
+# https://github.com/fivepiece/gnu-bc/tree/1.07.1-fix_arrays
+# see https://github.com/fivepiece/bc_segfault
+
+bc_prog="$HOME/software/bc-1.07.1/bc/bc"
+
+# path to bitcoin core \ knots executables
+# examples in the ./config/bin directory
+# remember to place 'regtest.conf' in the proper directory
+# for regtestd to find
+
+export PATH="$PATH:${conf_dir}/bin"

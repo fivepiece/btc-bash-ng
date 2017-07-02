@@ -1,0 +1,11 @@
+#!/bin/bash
+
+mkdir -p /dev/shm/regchain
+if [[ ! -d /dev/shm/regchain ]]; then
+    echo "directory /dev/shm/regchain does not exist" 1>&2
+    exit
+fi
+bindir="$HOME/software/install/bitcoin/bin"
+set -f
+${bindir}/bitcoind -conf=${HOME}/.bitcoin/regtest.conf "$@"
+set +f
