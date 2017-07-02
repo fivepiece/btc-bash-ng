@@ -68,7 +68,7 @@ rfc6979 ()
 
         # 3.2.h.3
         read foundk < <( \
-            bc_clean ${bc_env[0]} ${bc_env[16]} ${bc_env[17]} <<<"\
+            bc_clean ${bc_env[config]} ${bc_env[koblitz]} ${bc_env[activate]} <<<"\
             (1 < ${t}) && (${t} < curve_n);" 2>/dev/null )
 #         echo "# foundk = ${foundk}"
 
