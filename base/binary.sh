@@ -13,6 +13,10 @@ alias bin2bytes='od -t x1 -An -v -w1'
 # bin2hex FILE : "HEX..."
 alias bin2hex="hexdump -v -e '\"\" 1/1 \"%02X\" \"\"'"
 
+# removed newlines and tabs from hex input and turns to upper case
+# a newline is redirected to stderr so it's not added to the output
+alias cleanhex="tr -d ' \n\t' | tr [:lower:] [:upper:]; echo 1>&2"
+
 # print the raw value of hexstr
 # echo HEX | hex2bin : BIN
 # hex2bin HEX : BIN

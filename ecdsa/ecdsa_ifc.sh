@@ -7,7 +7,9 @@ compresspoint ()
 
 uncompresspoint ()
 {
-    bc_ecdsa <<<"uncompresspoint(${1^^});"
+    local -au pt
+    readarray -t pt < <( bc_ecdsa <<<"uncompresspoint(${1^^});" )
+    printf '%s%s%s\n' '04' "${pt[0]}" "${pt[1]}"
 }
 
 sig2der ()
