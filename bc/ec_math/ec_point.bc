@@ -163,9 +163,13 @@ define void uncompresspoint_api(x, *point[]){
 
 define void uncompresspoint(x){
 
-    auto ret[];
+    auto ret[], pt;
 
     uncompresspoint_api(x, ret[]);
-    left_pad(ret[0], curve_words);
-    left_pad(ret[1], curve_words);
+    pt = ret[0] * (10 ^ curve_words);
+    pt += ret[1];
+    print "04";
+    left_pad(pt, curve_words * 2);
+    # left_pad(ret[0], curve_words);
+    # left_pad(ret[1], curve_words);
 }

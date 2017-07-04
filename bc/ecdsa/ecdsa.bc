@@ -75,8 +75,13 @@ define ecdsa_verify_api(z, x, y, r, s, gx, gy, p, n){
     fastecmul_api(u2, x, y, n, p, u2_pt[]);
     ecadd_api(u1_pt[0], u1_pt[1], u2_pt[0], u2_pt[1], p, r_pt[]);
 
-    if ( mod(r_pt[0], n) == r ){
+    if (( r_pt[0] != 0) && (mod(r_pt[0], n) == r )){
         return r;
+    }
+    if ( r + n < p ){
+        if ( ispoint(r+n, getyfromx(r+n)) ){
+            return ecdsa_verify_api(z, x, y, (r + n), s, gx, gy, p, n);
+            }
     }
     return 0;
 }
@@ -85,7 +90,7 @@ define ecdsa_verify(z, pubkey, r, s){
 
     auto pubpt[];
     uncompresspoint_api(pubkey, pubpt[]);
-    return ecdsa_verify_api(z, pubpt[0], pubpt[1], r, s, curve_gx, curve_gy, curve_p, curve_n);
+    return (ecdsa_verify_api(z, pubpt[0], pubpt[1], r, s, curve_gx, curve_gy, curve_p, curve_n) == r);
 }
 
 define void ecdsa_recover_api(z, r, s, *ret[]){
@@ -93,7 +98,6 @@ define void ecdsa_recover_api(z, r, s, *ret[]){
     auto ry_arr[], invr, r1_pt[], r2_pt[], sr1_pt[], sr2_pt[], zg_pt[], mul1_pt[], mul2_pt[], rmul1_pt[], rmul2_pt[];
 
     z = mod(-z, curve_n);
-    # r = mod(r, curve_n);
     gety_api(r, ry_arr[]);
     invr = invmod(r, curve_n);
 
@@ -120,10 +124,15 @@ define void ecdsa_recover_api(z, r, s, *ret[]){
 define void ecdsa_recover(z, r, s){
 
     auto ret[];
-    ecdsa_recover_api(z, r, s, retarr[]);
+    ecdsa_recover_api(z, r, s, ret[]);
 
-    compresspoint(retarr[0],retarr[1]);
-    compresspoint(retarr[2],retarr[3]);
+    compresspoint(ret[0],ret[1]);
+    compresspoint(ret[2],ret[3]);
+    if ( r + curve_n < curve_p ){
+        if ( ispoint(r + curve_n, getyfromx(r + curve_n)) ){
+            ecdsa_recover(z, r + curve_n, s);
+        }
+    }
 }
 
 
