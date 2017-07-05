@@ -161,15 +161,31 @@ define void uncompresspoint_api(x, *point[]){
     }
 }
 
-define void uncompresspoint(x){
+define uncompresspoint(x){
 
     auto ret[], pt;
 
     uncompresspoint_api(x, ret[]);
-    pt = ret[0] * (10 ^ curve_words);
+    pt = 4 * (10 ^ (curve_words*2));
+    pt += (ret[0] * (10 ^ curve_words));
     pt += ret[1];
-    print "04";
-    left_pad(pt, curve_words * 2);
+    print "0";
+    return pt;
+    # left_pad(pt, curve_words * 2);
     # left_pad(ret[0], curve_words);
     # left_pad(ret[1], curve_words);
+}
+
+define ecpf_compress_pubkey(pub){
+
+    auto cpub, tmp;
+
+    cpub = pub / (10 ^ curve_words);
+    if (pub % 2){
+        cpub -= 10^curve_words;
+    } else {
+        cpub -= 2*10^curve_words;
+    }
+    print "0"
+    return cpub;
 }
