@@ -28,6 +28,11 @@ define wordlen(n){
     return i;
 }
 
+define bytelen(n){
+
+    return (wordlen(n)+1)/2;
+}
+
 # accepts a number, a base to convert to and an array to place
 # the converted number
 # cvrt[0] = array length
