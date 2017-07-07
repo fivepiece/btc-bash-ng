@@ -25,7 +25,6 @@ contracthash_verify_api(z, x, y, r, s, n_x, n_y, tweak){
     return (r != 0) && (r_ver == cmt_pt[0]);
 }
 
-
 # used for recovering k and d from contracthash nonce reuse
 
 define contracthash_punish_api(r1, s1, tw1, r2, s2, tw2, z1, n){
