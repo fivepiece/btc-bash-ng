@@ -6,7 +6,7 @@ contracthash_sign_api(k0, tweak, z, d, *contract[]){
 
     auto k1, s, nonce[], sig[];
 
-    fastecmul_api(k0, curve_gx, curve_gy, curve_n, curve_p, nonce[]);
+    ecmul_api(k0, curve_gx, curve_gy, curve_n, curve_p, nonce[]);
     k1 = mod(k0 + tweak, curve_n);
     ecdsa_sign(k1, z, d, sig[]);
     contract[0] = nonce[0];
@@ -19,7 +19,7 @@ contracthash_verify_api(z, x, y, r, s, n_x, n_y, tweak){
 
     auto tw_pt[], cmt_pt[], r_ver;
 
-    fastecmul_api(tweak, curve_gx, curve_gy, curve_n, curve_p, tw_pt[]);
+    ecmul_api(tweak, curve_gx, curve_gy, curve_n, curve_p, tw_pt[]);
     ecadd_api(tw_pt[0], tw_pt[1], n_x, n_y, curve_p, cmt_pt[])
     r_ver = ecdsa_verify_api(z, x, y, r, s, curve_gx, curve_gy, curve_p, curve_n);
     return (r != 0) && (r_ver == cmt_pt[0]);

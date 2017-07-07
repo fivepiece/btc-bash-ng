@@ -19,7 +19,7 @@ define ecdsa_sign_api(r, k, z, d, n){
 define void ecdsa_sign(k, z, d, *sig[]){
 
     auto r_pt[], s;
-    fastecmul_api(k, curve_gx, curve_gy, curve_n, curve_p, r_pt[]);
+    ecmul_api(k, curve_gx, curve_gy, curve_n, curve_p, r_pt[]);
     sig[0] = mod(r_pt[0], curve_n);
     sig[1] = ecdsa_sign_api(r_pt[0], k, z, d, curve_n);
 }
@@ -93,8 +93,8 @@ define ecdsa_verify_api(z, x, y, r, s, gx, gy, p, n){
     u1 = mod(z * w, n);
     u2 = mod(r * w, n);
 
-    fastecmul_api(u1, gx, gy, n, p, u1_pt[]);
-    fastecmul_api(u2, x, y, n, p, u2_pt[]);
+    ecmul_api(u1, gx, gy, n, p, u1_pt[]);
+    ecmul_api(u2, x, y, n, p, u2_pt[]);
     ecadd_api(u1_pt[0], u1_pt[1], u2_pt[0], u2_pt[1], p, r_pt[]);
 
     if (( r_pt[0] != 0) && (mod(r_pt[0], n) == r )){
@@ -130,19 +130,19 @@ define void ecdsa_recover_api(z, r, s, *ret[]){
     gety_api(r, ry_arr[]);
     invr = invmod(r, curve_n);
 
-    fastecmul_api(s, r, ry_arr[0], curve_n, curve_p, r1_pt[]);
+    ecmul_api(s, r, ry_arr[0], curve_n, curve_p, r1_pt[]);
 
-    fastecmul_api(s, r, ry_arr[1], curve_n, curve_p, r2_pt[]);
+    ecmul_api(s, r, ry_arr[1], curve_n, curve_p, r2_pt[]);
 
-    fastecmul_api(z, curve_gx, curve_gy, curve_n, curve_p, zg_pt[]);
+    ecmul_api(z, curve_gx, curve_gy, curve_n, curve_p, zg_pt[]);
 
     ecadd_api(r1_pt[0], r1_pt[1], zg_pt[0], zg_pt[1], curve_p, mul1_pt[]);
 
     ecadd_api(r2_pt[0], r2_pt[1], zg_pt[0], zg_pt[1], curve_p, mul2_pt[]);
 
-    fastecmul_api(invr, mul1_pt[0], mul1_pt[1], curve_n, curve_p, rmul1_pt[]);
+    ecmul_api(invr, mul1_pt[0], mul1_pt[1], curve_n, curve_p, rmul1_pt[]);
 
-    fastecmul_api(invr, mul2_pt[0], mul2_pt[1], curve_n, curve_p, rmul2_pt[]);
+    ecmul_api(invr, mul2_pt[0], mul2_pt[1], curve_n, curve_p, rmul2_pt[]);
 
     ret[0] = rmul1_pt[0];
     ret[1] = rmul1_pt[1];
@@ -186,7 +186,7 @@ define ecdsa_getz_api(r, s, k, d, n){
 define ecdsa_getz(s, k, d){
 
     auto r_pt[];
-    fastecmul_api(k, curve_gx, curve_gy, curve_n, curve_p, r_pt[]);
+    ecmul_api(k, curve_gx, curve_gy, curve_n, curve_p, r_pt[]);
     return ecdsa_getz_api(mod(r_pt[0], curve_n), s, k, d, curve_n);
 }
 
@@ -198,7 +198,7 @@ define ecdsa_getd_api(r, s, k, z, n){
 define ecdsa_getd(s, k, z){
 
     auto r_pt[];
-    fastecmul_api(k, curve_gx, curve_gy, curve_n, curve_p, r_pt[]);
+    ecmul_api(k, curve_gx, curve_gy, curve_n, curve_p, r_pt[]);
     return ecdsa_getd_api(mod(r_pt[0], curve_n), s, k, z, curve_n);
 }
 

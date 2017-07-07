@@ -113,7 +113,7 @@ define void ecadd(p, q){
     compresspoint(pt[0], pt[1]);
 }
 
-define void ecmul_api(d, gx, gy, n, p, *ret[]){
+define void ecmul_std_api(d, gx, gy, n, p, *ret[]){
 
     auto parr[];
 
@@ -140,15 +140,15 @@ define void ecmul_api(d, gx, gy, n, p, *ret[]){
     }
 }
 
-define void ecmul(d){
+define void ecmul_std(d){
 
     auto ret[];
 
-    ecmul_api(d, curve_gx, curve_gy, curve_n, curve_p, ret[]);
+    ecmul_std_api(d, curve_gx, curve_gy, curve_n, curve_p, ret[]);
     compresspoint(ret[0], ret[1]);
 }
 
-define void fastecmul_api(d, qx, qy, n, p, *ret[]){
+define void ecmul_api(d, qx, qy, n, p, *ret[]){
 
     auto lambda_q[], k[], p1[], p2[];
 
@@ -162,14 +162,14 @@ define void fastecmul_api(d, qx, qy, n, p, *ret[]){
     get_lambda_point_api(endomorphism_beta, qx, qy, p, lambda_q[]);
 
     balanced_length_api(d, endomorphism_a1, endomorphism_b1, endomorphism_a2, endomorphism_b2, n, k[]);
-    ecmul_api(k[0] ,qx, qy, n, p, p1[]);
-    ecmul_api(-k[1], lambda_q[0], -lambda_q[1], n, p, p2[]);
+    ecmul_std_api(k[0] ,qx, qy, n, p, p1[]);
+    ecmul_std_api(-k[1], lambda_q[0], -lambda_q[1], n, p, p2[]);
     ecadd_api(p1[0], p1[1], p2[0], p2[1], p, ret[]);
 }
 
-define void fastecmul(d){
+define void ecmul(d){
 
     auto ret[];
-    fastecmul_api(d, curve_gx, curve_gy, curve_n, curve_p, ret[]);
+    ecmul_api(d, curve_gx, curve_gy, curve_n, curve_p, ret[]);
     compresspoint(ret[0],ret[1]);
 }

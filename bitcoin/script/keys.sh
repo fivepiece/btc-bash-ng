@@ -23,7 +23,7 @@ key_hash1602p2sh ()
 
 key_priv2pub ()
 { 
-    bc_ecdsa <<< "fastecmul("${1^^}");"
+    bc_ecdsa <<< "ecmul("${1^^}");"
 }
 
 key_priv2wif()

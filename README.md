@@ -20,7 +20,7 @@ Returns the cube roots of 11 mod the curve's p
 
 Returns balanced length multipliers for these two numbers
 
-    `fastecmul(12EF)`
+    `ecmul(12EF)`
 
 Multiplies `12EF` by the curve's generator and returns the point
 

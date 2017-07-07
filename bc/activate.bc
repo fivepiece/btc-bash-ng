@@ -19,5 +19,5 @@ set_endomorphism_vals();
 # rootmod(11,3,curve_p);
 # balanced_length_mod((curve_n/2) + (curve_n/4), curve_p);
 # balanced_length_mod(curve_p-((curve_n/2) + (curve_n/4)), curve_p);
-# fastecmul(curve_n/2);
+# ecmul(curve_n/2);
 # ecadd(curve_g, curve_g);
