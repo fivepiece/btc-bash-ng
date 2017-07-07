@@ -12,3 +12,6 @@ Session.vim
 tags
 # paths.sh file
 config/paths.sh
+# bc install
+config/deps
+config/bin/bc
