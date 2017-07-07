@@ -107,4 +107,4 @@ test_ecdsa ()
     test_ecdsa_verify && \
     test_ecdsa_recover
 }
-test_ecdsa; echo "$?"
+test_ecdsa || return 1
