@@ -7,10 +7,7 @@ testrfc6979_sign(){
     local -au kval
 
     read datahex < <( echo -n "${databin}" | bin2hex )
-    sign_der "${key}" "${datahex}"
-    # read msg < <( ${hashfun} "${datahex}" )
-    # readarray -t kval < <( sigk "${key}" "${datahex}" )
-    # bc <<<"sign(${kval[1]},${kval[0]},${msg},${key},nn)"
+    sign "${key}" "${datahex}"
 }
 
 testrfc6979()

@@ -115,6 +115,13 @@ define ecdsa_verify(z, pubkey, r, s){
     return (ecdsa_verify_api(z, pubpt[0], pubpt[1], r, s, curve_gx, curve_gy, curve_p, curve_n) == r);
 }
 
+define ecdsa_verify_der(z, pubkey, dersig){
+
+    auto sig[];
+    ecdsa_der2sig(dersig, sig[]);
+    return ecdsa_verify(z, pubkey, sig[0], sig[1]);
+}
+
 define void ecdsa_recover_api(z, r, s, *ret[]){
 
     auto ry_arr[], invr, r1_pt[], r2_pt[], sr1_pt[], sr2_pt[], zg_pt[], mul1_pt[], mul2_pt[], rmul1_pt[], rmul2_pt[];
@@ -157,6 +164,12 @@ define void ecdsa_recover(z, r, s){
     }
 }
 
+define void ecdsa_recover_der(z, dersig){
+
+    auto sig[];
+    ecdsa_der2sig(dersig, sig[]);
+    ecdsa_recover(z, sig[0], sig[1]);
+}
 
 # some useful algebra
 
