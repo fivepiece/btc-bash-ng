@@ -1,5 +1,5 @@
 #!/bin/bash
 bindir="$HOME/software/install/bitcoin/bin"
 set -f
-${bindir}/bitcoin-cli -conf=${HOME}/.bitcoin/regtest.conf "$@"
+${bindir}/bitcoin-cli $@
 set +f

@@ -14,3 +14,5 @@ bc_prog="${conf_dir}/bin/bc"
 # for regtestd to find
 
 export PATH="$PATH:${conf_dir}/bin"
+alias regtestd="regtestd -conf=${btcb_home}/config/regtest.conf"
+alias regtest-cli="regtest-cli -conf=${btcb_home}/config/regtest.conf"

@@ -7,5 +7,5 @@ if [[ ! -d /dev/shm/regchain ]]; then
 fi
 bindir="$HOME/software/install/bitcoin/bin"
 set -f
-${bindir}/bitcoind -conf=${HOME}/.bitcoin/regtest.conf "$@"
+${bindir}/bitcoind $@
 set +f

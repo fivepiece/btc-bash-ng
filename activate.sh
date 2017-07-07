@@ -2,7 +2,12 @@
 
 btcb_home="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && echo $PWD )"
 
-source "${btcb_home}/config/paths.sh"
+if [[ -r "${btcb_home}/config/paths.sh" ]]; then
+    source "${btcb_home}/config/paths.sh"
+else
+    source "${btcb_home}/config/paths.sh.example"
+fi
+
 source "${btcb_home}/bc/bc_env.sh"
 
 btcb_env=( \
