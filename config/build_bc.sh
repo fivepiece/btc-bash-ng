@@ -3,16 +3,16 @@
 get_bc ()
 {
     if ! sha256sum -c "${build_dir}/bc-1.07.1.tar.gz.sha256"; then
-        wget -q --show-progress --tries=5 -O bc-1.07.1.tar.gz https://ftp.gnu.org/gnu/bc/bc-1.07.1.tar.gz
+        wget --tries=5 -O bc-1.07.1.tar.gz https://ftp.gnu.org/gnu/bc/bc-1.07.1.tar.gz
     fi
     if ! sha256sum -c "${build_dir}/bc-1.07.1.tar.gz.sig.sha256"; then
-        wget -q --show-progress --tries=5 -O bc-1.07.1.tar.gz.sig https://ftp.gnu.org/gnu/bc/bc-1.07.1.tar.gz.sig
+        wget --tries=5 -O bc-1.07.1.tar.gz.sig https://ftp.gnu.org/gnu/bc/bc-1.07.1.tar.gz.sig
     fi
 }
 
 verify_bc ()
 {
-    wget -q --show-progress --tries=5 -O 81C24FF12FB7B14B.pub 'https://pgp.mit.edu/pks/lookup?op=get&search=0x81C24FF12FB7B14B'
+    wget --tries=5 -O 81C24FF12FB7B14B.pub 'https://pgp.mit.edu/pks/lookup?op=get&search=0x81C24FF12FB7B14B'
     gpg --dearmor <81C24FF12FB7B14B.pub >81C24FF12FB7B14B.pub.bin
     gpg --no-default-keyring --keyring ./81C24FF12FB7B14B.pub.bin --verify bc-1.07.1.tar.gz.sig
     return $?
