@@ -5,7 +5,8 @@ btcb_bit_home="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && echo $PWD )"
 btcb_bit_env=( \
     script/globals/opcodes.sh script/globals/scripts.sh \
     script/script_num.sh script/keys.sh script/scriptpubkey.sh \
-    transaction.sh parse.sh )
+    transaction.sh parse.sh  \
+    bips/bip32.sh )
 
 set_network_versions() {
 
