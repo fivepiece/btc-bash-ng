@@ -1,0 +1,24 @@
+sudo: required
+dist: jessie
+language: bash
+
+notifications:
+    irc: "ircs://chat.freenode.net:7070/#p534"
+
+bash:
+    - '4.3'
+    - '4.4'
+
+before_install:
+    - sudo apt-get update -qq
+    - sudo apt-get install libreadline-dev
+
+before_script:
+    - pushd ./config
+    - ./build_bc.sh
+    - popd
+
+script:
+    - source ./activate.sh
+    - source ./test.sh
+    - test "$?" -eq 0 && echo "test passed"
