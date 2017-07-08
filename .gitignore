@@ -15,3 +15,7 @@ config/paths.sh
 # bc install
 config/deps
 config/bin/bc
+# regtest .sh
+config/bin/regtest-cli
+config/bin/regtest-tx
+config/bin/regtestd

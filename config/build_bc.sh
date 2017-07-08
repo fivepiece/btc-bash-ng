@@ -15,6 +15,7 @@ verify_bc ()
     wget -q --show-progress --tries=5 -O 81C24FF12FB7B14B.pub 'https://pgp.mit.edu/pks/lookup?op=get&search=0x81C24FF12FB7B14B'
     gpg --dearmor <81C24FF12FB7B14B.pub >81C24FF12FB7B14B.pub.bin
     gpg --no-default-keyring --keyring ./81C24FF12FB7B14B.pub.bin --verify bc-1.07.1.tar.gz.sig
+    return $?
 }
 
 build_bc ()
@@ -48,5 +49,12 @@ build_dir="$PWD"
 mkdir -p "${build_dir}/deps"
 pushd ./deps
 get_bc
-verify_bc
+if which gpg; then
+    if ! verify_bc; then
+        echo "signature verification failed for bc-1.07.1.tar.gz" 1>&2
+        exit 1
+    fi
+else
+    echo "gpg not found, skipping signature verification" 1>&2
+fi
 build_bc
