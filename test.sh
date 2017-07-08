@@ -1,6 +1,7 @@
 #!/bin/bash -x
 
 set -x
+shopt -s expand_aliases
 source ./activate.sh
 
 b=0

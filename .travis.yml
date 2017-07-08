@@ -19,6 +19,5 @@ before_script:
     - popd
 
 script:
-    - source ./activate.sh
     - source ./test.sh
     - test "$?" -eq 0 && echo "test passed"
