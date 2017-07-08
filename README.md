@@ -1,5 +1,5 @@
 # Bitcoin tools for bash and bc
-
+[![Build Status](https://travis-ci.org/fivepiece/btc-bash-ng.svg?branch=master)](https://travis-ci.org/fivepiece/btc-bash-ng)
 
 ## Setup
 
