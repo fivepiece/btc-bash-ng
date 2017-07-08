@@ -20,4 +20,3 @@ before_script:
 
 script:
     - source ./test.sh
-    - test "$?" -eq 0 && echo "test passed"
