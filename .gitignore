@@ -19,3 +19,5 @@ config/bin/bc
 config/bin/regtest-cli
 config/bin/regtest-tx
 config/bin/regtestd
+# test logs
+tests.log

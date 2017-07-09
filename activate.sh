@@ -12,7 +12,7 @@ source "${btcb_home}/bc/bc_env.sh"
 
 btcb_env=( \
     base/binary.sh base/string.sh base/number.sh base/int_convert.sh \
-    hash/hexhash.sh hash/hmac.sh \
+    hash/hexhash.sh hash/hmac.sh hash/merkle_tree.sh \
     encode/base58check.sh encode/padding.sh encode/pattern.sh \
     ecdsa/rfc6979.sh ecdsa/ecdsa_ifc.sh )
 
