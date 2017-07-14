@@ -206,3 +206,32 @@ define ecdsa_getr(k, s, z, d, n){
 
     return mod(invmod(d,n) * mod((k*s) - z,n),n);
 }
+
+define void ecdsa_recover_raw(z, r, s, g, n, p, *ret[]){
+
+    auto gpt[], ry_arr[], invr, r1_pt[], r2_pt[], sr1_pt[], sr2_pt[], zg_pt[], mul1_pt[], mul2_pt[], rmul1_pt[], rmul2_pt[];
+
+    uncompresspoint_api(g, gpt[]);
+    z = mod(-z, n);
+    gety_api(r, ry_arr[]);
+    invr = invmod(r, n);
+
+    ecmul_api(s, r, ry_arr[0], n, p, r1_pt[]);
+
+    ecmul_api(s, r, ry_arr[1], n, p, r2_pt[]);
+
+    ecmul_api(z, gpt[0], gpt[1], n, p, zg_pt[]);
+
+    ecadd_api(r1_pt[0], r1_pt[1], zg_pt[0], zg_pt[1], p, mul1_pt[]);
+
+    ecadd_api(r2_pt[0], r2_pt[1], zg_pt[0], zg_pt[1], p, mul2_pt[]);
+
+    ecmul_api(invr, mul1_pt[0], mul1_pt[1], n, p, rmul1_pt[]);
+
+    ecmul_api(invr, mul2_pt[0], mul2_pt[1], n, p, rmul2_pt[]);
+
+    ret[0] = rmul1_pt[0];
+    ret[1] = rmul1_pt[1];
+    ret[2] = rmul2_pt[0];
+    ret[3] = rmul2_pt[1];
+}
