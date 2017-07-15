@@ -25,6 +25,7 @@ declare -A bc_env=(
     [jacobian]="${bc_home}/ec_math/jacobian.bc"
     [ecdsa]="${bc_home}/ecdsa/ecdsa.bc"
     [koblitz]="${bc_home}/ec_math/curves/koblitz.bc"
+    [ec_schnorr]="${bc_home}/schnorr/ec_schnorr.bc"
     [activate]="${bc_home}/activate.bc" )
 
 unset BC_ENV_ARGS;
@@ -49,3 +50,4 @@ bc_ecmath()
 }
 
 alias bc_ecdsa="_bc_ecmath ${bc_env[ecdsa]} ${bc_env[koblitz]} ${bc_env[activate]}"
+alias bc_ecschnorr="_bc_ecmath ${bc_env[ec_schnorr]} ${bc_env[koblitz]} ${bc_env[activate]}"

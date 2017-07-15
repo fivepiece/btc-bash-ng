@@ -1,0 +1,38 @@
+#!/usr/bin/bc
+
+define ec_schnorr_sign_api(d, k, c, n){
+
+    mod(k - (c * d), n);
+}
+
+define ec_schnorr_sign(d, k, c){
+
+    return schnorr_sign_api(d, k, c, curve_n);
+}
+
+define ec_schnorr_verify_api(x, y, gx, gy, s, c, n, p){
+
+    auto sg[], cp[], rk[];
+
+    if ( !( (0 <= c) && (c < 2^(curve_words*4)) ) && ( (1 <= s) && (s < n) )){
+        return 0;
+    }
+    ecmul_api(s, gx, gy, n, p, sg[]);
+    ecmul_api(c, x, y, n, p, cp[]);
+    ecadd_api(sg[0], sg[1], cp[0], cp[1], rk[]);
+
+    if (ispoint_api(rk[0], rk[1]){
+        return rk[0];
+    } else {
+        return 0;
+    }
+}
+
+define void ec_schnorr_veiry(p, s, c){
+
+    auto p1[], rk;
+
+    uncompresspoint_api(p, p1[]);
+    rk = ec_schnorr_verify_api(p[0], p[1], curve_gx, curve_gy, s, c, curve_n, curve_p);
+    left_pad(rk, curve_words);
+}
