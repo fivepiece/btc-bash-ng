@@ -24,7 +24,7 @@ define void rootmod_api(x, r, p, *roots[]){
     # rm_z = rootvals[0];
     # rm_c = rootvals[3];
 
-    # print "s : ", s, " q : ", q, " z : ", z, " c : ", c, "\n";
+    # print "s : ", rootvals[1], " q : ", rootvals[2], " z : ", rootvals[0], " c : ", rootvals[3], "\n";
     ts_ret = tonelli_shanks_api(x, r, rootvals[1], rootvals[2], rootvals[3], p);
 
     if ( r % 2 == 0 ){
