@@ -1,38 +1,46 @@
 #!/usr/bin/bc
 
-define ec_schnorr_sign_api(d, k, c, n){
+define ec_schnorr_sign_api(h, d, k, n){
 
-    mod(k - (c * d), n);
+    return mod(k - (h * d), n);
 }
 
-define ec_schnorr_sign(d, k, c){
+define ec_schnorr_sign(h, d, k){
 
-    return schnorr_sign_api(d, k, c, curve_n);
+    return ec_schnorr_sign_api(h, d, k, curve_n);
 }
 
-define ec_schnorr_verify_api(x, y, gx, gy, s, c, n, p){
+define ec_schnorr_verify_api(x, y, gx, gy, h, s, n, p, *r[]){
 
-    auto sg[], cp[], rk[];
+    auto sg[], hp[], rk[];
 
-    if ( !( (0 <= c) && (c < 2^(curve_words*4)) ) && ( (1 <= s) && (s < n) )){
+    if ( !( (0 <= h) && (h < 2^(curve_words*4)) ) && ( (1 <= s) && (s < n) )){
         return 0;
     }
     ecmul_api(s, gx, gy, n, p, sg[]);
-    ecmul_api(c, x, y, n, p, cp[]);
-    ecadd_api(sg[0], sg[1], cp[0], cp[1], rk[]);
+    ecmul_api(h, x, y, n, p, hp[]);
+    ecadd_api(sg[0], sg[1], hp[0], hp[1], p, rk[]);
 
-    if (ispoint_api(rk[0], rk[1]){
-        return rk[0];
+    if ( ispoint(rk[0], rk[1]) ){
+        r[0] = rk[0];
+        r[1] = rk[1];
+        return 1;
     } else {
+        r[0] = 0;
+        r[1] = 0;
         return 0;
     }
 }
 
-define void ec_schnorr_veiry(p, s, c){
+define void ec_schnorr_verify(p, h, s){
 
-    auto p1[], rk;
+    auto p1[], valid, rk[];
 
     uncompresspoint_api(p, p1[]);
-    rk = ec_schnorr_verify_api(p[0], p[1], curve_gx, curve_gy, s, c, curve_n, curve_p);
-    left_pad(rk, curve_words);
+    valid = ec_schnorr_verify_api(p1[0], p1[1], curve_gx, curve_gy, h, s, curve_n, curve_p, rk[]);
+    if (valid){
+        left_pad(rk[0], curve_words);
+    } else {
+        0;
+    }
 }

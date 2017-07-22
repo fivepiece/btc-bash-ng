@@ -29,7 +29,7 @@ declare -A bc_env=(
     [activate]="${bc_home}/activate.bc" )
 
 unset BC_ENV_ARGS;
-export BC_ENV_ARGS="${bc_flags} ${bc_env[config]} ${bc_env[conversion]} ${bc_env[helpers]} ${bc_env[bitwise_logic]} ${bc_env[shift_rot]} ${bc_env[hmac_conf]} ${bc_env[hmac]} ${bc_env[math_mod]} ${bc_env[extended_euclidean]} ${bc_env[tonelli_shanks]} ${bc_env[root_mod]} ${bc_env[endomorphism]} ${bc_env[ec_point]} ${bc_env[ec_math]} ${bc_env[jacobian]} ${bc_env[ecdsa]} ${bc_env[koblitz]} ${bc_env[activate]}"
+export BC_ENV_ARGS="${bc_flags} ${bc_env[config]} ${bc_env[conversion]} ${bc_env[helpers]} ${bc_env[bitwise_logic]} ${bc_env[shift_rot]} ${bc_env[hmac_conf]} ${bc_env[hmac]} ${bc_env[math_mod]} ${bc_env[extended_euclidean]} ${bc_env[tonelli_shanks]} ${bc_env[root_mod]} ${bc_env[endomorphism]} ${bc_env[ec_point]} ${bc_env[ec_math]} ${bc_env[jacobian]} ${bc_env[ecdsa]} ${bc_env[ec_schnorr]} ${bc_env[koblitz]} ${bc_env[activate]}"
 
 alias bc="${bc_prog}"
 alias bc_clean="BC_ENV_ARGS='-q' bc"
@@ -37,14 +37,20 @@ alias bc_encode="bc_clean ${bc_env[config]} ${bc_env[conversion]} ${bc_env[helpe
 alias bc_bitcoin="bc_encode ${bc_env[bitcoin]}"
 alias bc_hmac="bc_encode ${bc_env[bitwise_logic]} ${bc_env[hmac_conf]} ${bc_env[hmac]} ${bc_env[koblitz]} ${bc_env[activate]}"
 
+# alias _bc_math="bc_encode ${bc_env[math_mod]} ${bc_env[tonelli_shanks]} ${bc_env[root_mod]}"
+# bc_math ()
+# {
+#     _bc_math "${bc_env[koblitz]}" "${bc_env[activate]}"
+# }
+
 alias _bc_ecpoint="bc_encode ${bc_env[math_mod]} ${bc_env[tonelli_shanks]} ${bc_env[root_mod]} ${bc_env[endomorphism]} ${bc_env[ec_point]}"
-bc_ecpoint()
+bc_ecpoint ()
 {
     _bc_ecpoint "${bc_env[koblitz]}" "${bc_env[activate]}"
 }
 alias _bc_ecmath="_bc_ecpoint ${bc_env[ec_math]}"
 
-bc_ecmath()
+bc_ecmath ()
 {
     _bc_ecmath "${bc_env[koblitz]}" "${bc_env[activate]}"
 }
