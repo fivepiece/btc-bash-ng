@@ -52,10 +52,6 @@ schnorr_rs_verify ()
 {
     local -u m="$1" q="$2" r="$3" s="$4" h
 
-    # if ! bc_ecmath <<<"( (${s} < curve_n) && (${r} < curve_n)"; then
-    #     echo "invalid signature" 1>&2
-    #     return 1
-    # fi
     read h < <( sha256 "${r}${m}" )
     v="$(bc_ecschnorr <<<" \
         if ( (${s} >= curve_n) || \
