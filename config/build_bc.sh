@@ -35,7 +35,7 @@ build_bc ()
     git apply --verbose "${build_dir}/bc.patch" || ( echo "patch failed" 1>&2; exit 1 )
     ./configure --with-readline
     make
-    if ! make check; then
+    if ! make bc; then
         echo -e "\n\nre-run as `./build_bc.sh 2>&1 > build_bc.log` and tell arubi" 1>&2
         exit 1
     fi
