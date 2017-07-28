@@ -59,3 +59,8 @@ hmac_sha256()
 {
     hmac "$1" "$2" 'sha256'
 }
+
+hmac_sha512()
+{
+    hmac "$1" "$2" 'sha512'
+}
