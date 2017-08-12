@@ -24,6 +24,7 @@ declare -A bc_env=(
     [ec_math]="${bc_home}/ec_math/ec_math.bc"
     [jacobian]="${bc_home}/ec_math/jacobian.bc"
     [ecdsa]="${bc_home}/ecdsa/ecdsa.bc"
+    [contract_hash]="${bc_home}/ecdsa/contract_hash.bc"
     [koblitz]="${bc_home}/ec_math/curves/koblitz.bc"
     [ec_schnorr]="${bc_home}/schnorr/ec_schnorr.bc"
     [activate]="${bc_home}/activate.bc" )

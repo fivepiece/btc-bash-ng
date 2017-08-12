@@ -207,6 +207,38 @@ define ecdsa_getr(k, s, z, d, n){
     return mod(invmod(d,n) * mod((k*s) - z,n),n);
 }
 
+define void ecdsa_recover_k_api(z1, dersig1, z2, dersig2, n, *kvals[], *dvals[]){
+
+	auto sig1[], sig2[];
+
+    der2sig(dersig1, sig1[]);
+    der2sig(dersig2, sig2[]);
+    kvals[0] = mod(((z1 - z2) * invmod(sig1[1] - sig2[1], n)), n);
+    kvals[1] = mod(((z1 - z2) * invmod(sig1[1] + sig2[1], n)), n);
+    kvals[2] = mod(((z1 - z2) * invmod(-sig1[1] - sig2[1], n)), n);
+    kvals[3] = mod(((z1 - z2) * invmod(-sig1[1] + sig2[1], n)), n);
+
+    # dvals[0] = mod(mod((sig1[1] * kvals[0]) - z1, n) * invmod(sig1[0], n), n);
+    # dvals[1] = mod(mod((sig1[1] * kvals[1]) - z1, n) * invmod(sig1[0], n), n);
+    # dvals[2] = mod(mod((sig1[1] * kvals[2]) - z1, n) * invmod(sig1[0], n), n);
+    # dvals[3] = mod(mod((sig1[1] * kvals[3]) - z1, n) * invmod(sig1[0], n), n);
+    dvals[0] = ecdsa_getd_api(sig1[0], sig1[1], kvals[0], z1, n);
+    dvals[1] = ecdsa_getd_api(sig1[0], sig1[1], kvals[1], z1, n);
+    dvals[2] = ecdsa_getd_api(sig1[0], sig1[1], kvals[2], z1, n);
+    dvals[3] = ecdsa_getd_api(sig1[0], sig1[1], kvals[3], z1, n);
+}
+
+define void ecdsa_recover_k(z1, dersig1, z2, dersig2){
+
+    auto kvals[], dvals[];
+
+    ecdsa_recover_k_api(z1, dersig1, z2, dersig2, curve_n, kvals[], dvals[]);
+    print "possible k values :\n";
+    kvals[0]; kvals[1]; kvals[2]; kvals[3];
+    print "possible d values :\n";
+    dvals[0]; dvals[1]; dvals[2]; dvals[3];
+}
+
 define void ecdsa_recover_raw(z, r, s, g, n, p, *ret[]){
 
     auto gpt[], ry_arr[], invr, r1_pt[], r2_pt[], sr1_pt[], sr2_pt[], zg_pt[], mul1_pt[], mul2_pt[], rmul1_pt[], rmul2_pt[];
