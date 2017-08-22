@@ -29,7 +29,7 @@ define void gety_fast_api(x, *yarr[]){
 define void getyfromx_api(x, *yvals[]){
 
     auto roots[];
-    if (is_residue(x, 2, curve_p)){
+    if (is_residue(powmod(x, 3, curve_p) + curve_b, 2, curve_p)){
         rootmod_api(powmod(x, 3, curve_p) + curve_b, 2, curve_p, roots[]);
         yvals[0] = roots[1];
         yvals[1] = roots[2];
@@ -43,7 +43,7 @@ define void getyfromx_api(x, *yvals[]){
 define void getxfromy_api(y, *ret[]){
 
     auto roots[];
-    if (is_residue(y, 3, curve_p)){
+    if (is_residue(powmod(y, 2, curve_p) - curve_b, 3, curve_p)){
         rootmod_api(powmod(y, 2, curve_p) - curve_b, 3, curve_p, roots[]);
         ret[0] = roots[1];
         ret[1] = roots[2];
