@@ -13,7 +13,7 @@ script_p2sh=( "HASH160" "0x14" "scripthash" "EQUAL" )
 
 script_p2wpkh=( "0x00" "0x14" "pubkeyhash" )
 script_p2wsh=( "0x00" "0x20" "scripthash" )
-# script_p2wmast=( "0x51" "0x20" "masthash" ) # TODO port MAST
+script_p2wv1=( "0x51" "0x20" "witv1" ) # TODO port MAST
 
 # bip112 scripts
 

@@ -124,11 +124,10 @@ opcodes=(
     [PUBKEYHASH]='FD'
     [PUBKEY]='FE'
     [INVALIDOPCODE]='FF'
-    [DUPTOALTSTACK]='BA'
-    [DUPFROMALTSTACK]='BB'
-    [SWAPSTACK]='BC'
-    [SWAPCAT]='BD'
-    [RESIZE]='BE'
+    [CHECKSIGFROMSTACKVERIFY]='BA'
+    [CSTF]='BA'
+    [PUSHTXDATA]='BB'
+    [TXDATA]='BB'
     [EXPAND1]='D0'
     [EXPAND32]='EF')
 

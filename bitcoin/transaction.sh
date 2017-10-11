@@ -7,9 +7,9 @@ tx_mkout_serialize ()
     local -u seramt serscript
     local scriptsize
 
-    if [[ "${nest}" =~ "mast" ]]; then
+    if [[ "${nest}" =~ "mshash" ]]; then
 
-        tx_mkout_p2wmast "${amount}" "${asmscript}" "${nest//mast/}" "${meta[0]}" "${meta[1]}"
+        tx_mkout_p2mshash "${amount}" "${asmscript}" "${nest//msash/}" # "${meta[0]}" "${meta[1]}"
         return
     fi
     
@@ -77,12 +77,21 @@ tx_mkout_p2wsh ()
     tx_mkout_serialize "${amount}" "${script}" "${nest}"
 }
 
-tx_mkout_p2wmast ()
+tx_mkout_p2mshash ()
 {
     local amount="${1}" asmscript="${2}"
-    local nest="${3//mast/}" script path="$4" position="$5"
+    local nest="${3//mshash/}" script path="$4" position="$5"
 
-    read script < <( spk_pay2wmast "${asmscript}" "${path}" "${position}" )
+    read script < <( spk_pay2mshash "${asmscript}" "${path:-0}" "${position:-0}" )
+    tx_mkout_serialize "${amount}" "${script}" "${nest}"
+}
+
+tx_mkout_p2wpkv0 ()
+{
+    local amount="${1}" pubkey="${2}"
+    local nest="${3}" script
+
+    read script < <( spk_pay2wpkv0 "${pubkey}" )
     tx_mkout_serialize "${amount}" "${script}" "${nest}"
 }
 
