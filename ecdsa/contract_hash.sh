@@ -19,6 +19,7 @@ contracthash_verify ()
     local -u z1="$1" pub="$2" nnc1="$3" sig1="$4" c1="$5" tw1
 
     tw1="$( sha256 "${nnc1}${c1}" )"
+    decho "tw1 = ${tw1}"
     bc_ecdsa ${bc_env[contract_hash]} <<<" \
         contracthash_verify_api(${z1}, ${pub}, ${nnc1}, ${sig1}, ${tw1})"
 }

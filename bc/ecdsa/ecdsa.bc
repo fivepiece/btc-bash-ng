@@ -26,10 +26,18 @@ define void ecdsa_sign(k, z, d, *sig[]){
 
 define void ecdsa_sign_recoverable(k, z, d, compr, *sig[]){
 
-    auto recid, r_pt[], s;
+    auto recid, r_pt[], s, fflip;
     recid = 1B;
+    fflip = 1;
     ecmul_api(k, curve_gx, curve_gy, curve_n, curve_p, r_pt[]);
     sig[0] = mod(r_pt[0], curve_n);
+    sig[1] = mod((invmod(k, curve_n) * mod((z + (sig[0] * d)), curve_n)), curve_n);
+    if ( sig[1] > (curve_n / 2) ){
+        sig[1] = curve_n - sig[1];
+        # fflip = 0;
+        r_pt[1] = mod( -r_pt[1], curve_p );
+    }
+    # if ( (r_pt[1] % 2) == fflip ){
     if ( (r_pt[1] % 2) == 1 ){
         recid += 1;
     }
@@ -39,14 +47,9 @@ define void ecdsa_sign_recoverable(k, z, d, compr, *sig[]){
     if ( compr == 1 ){
         recid += 4;
     }
-    sig[0] = mod(r_pt[0], curve_n);
-    sig[1] = mod((invmod(k, curve_n) * mod((z + (sig[0] * d)), curve_n)), curve_n);
-    if ( sig[1] > (curve_n / 2) ){
-        sig[1] = curve_n - sig[1];
-        recid -= 1;
-    }
     # sig[1] = ecdsa_sign_api(r_pt[0], k, z, d, curve_n);
     sig[2] = recid;
+    sig[3] = compresspoint_api(r_pt[0], r_pt[1]);
 }
 
 define ecdsa_sig2der(r, s){
