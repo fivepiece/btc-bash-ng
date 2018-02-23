@@ -102,11 +102,12 @@ define ecdsa_sig2der(r, s){
 
 define void ecdsa_der2sig(dersig, *sig[]){
 
-    auto lensig, lenr, r, lens, s, tmp;
+    auto lensig, size_dersig_bytes, lenr, r, lens, s, tmp;
 
-    lensig = dersig / (100 ^ (bytelen(dersig) - 2)) % 100;
-    if (lensig < bytelen(derisg) + 2){
-        dersig /= 100;
+    size_dersig_bytes = bytelen(dersig);
+    lensig = dersig / (100 ^ (size_dersig_bytes - 2)) % 100;
+    if ((lensig + 2) < size_dersig_bytes){
+        dersig /= (100 ^ (size_dersig_bytes - lensig - 2));
     }
     lenr = dersig / (100 ^ (lensig - 2)) % 100;
     lens = dersig / (100 ^ (lensig - 2 - lenr - 2)) % 100;
