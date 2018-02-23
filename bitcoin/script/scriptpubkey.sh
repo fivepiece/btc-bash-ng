@@ -255,33 +255,33 @@ spk_pay2mshash()
     local -u scriptroot serscript keycodehash path="$2"
     local -u scripthash position="$3" k leaf depth version="${4:-00000000}"
 
-    echo "keycode : ${keycode[@]}" 1>&2
+    decho "keycode : ${keycode[@]}"
 
     read serscript < <( script_serialize "0 ${keycode[@]}" )
-    echo "serscript : ${serscript}" 1>&2
+    decho "serscript : ${serscript}"
 
     read keycodehash < <( sha256 "${serscript}" )
-    echo "keycodehash : ${keycodehash}" 1>&2
+    decho "keycodehash : ${keycodehash}"
 
     depth="$(( ${#path}/64 ))"
     iter="${keycodehash}"
-    echo "depth : ${depth}" 1>&2
-    echo "position : ${position}" 1>&2
+    decho "depth : ${depth}"
+    decho "position : ${position}"
     read leaf < <( BC_ENV_ARGS='-q' bc_clean <<<"obase=2; ((2^${depth})+${position})" | rev )
-    echo "leaf : ${leaf}" 1>&2
+    decho "leaf : ${leaf}"
     for (( i=0, j=${leaf:0:1}; i<$((${#leaf}-1)); ++i, j=${leaf:$i:1} )); do
-        echo "\${leaf:$i:1} = ${leaf:$i:1}" 1>&2
+        decho "\${leaf:$i:1} = ${leaf:$i:1}"
         if (( ${leaf:$i:1} == 0 )); then
-            echo "iter < <( sha256 "${iter}\|${path:$((i*64)):64}" )" 1>&2
+            decho "iter < <( sha256 "${iter}\|${path:$((i*64)):64}" )"
             read iter < <( sha256 "${iter}${path:$((i*64)):64}" )
         else
-            echo "iter < <( sha256 "${path:$((i*64)):64}\|${iter}" )" 1>&2
+            decho "iter < <( sha256 "${path:$((i*64)):64}\|${iter}" )"
             read iter < <( sha256 "${path:$((i*64)):64}${iter}" )
         fi
     done
 
     #leaf="$(( position % 2 ))"
-    #echo "${path:0:$((leaf*64))}|${scripthash}|${path:$(((leaf)*64))}" 1>&2
+    #decho "${path:0:$((leaf*64))}|${scripthash}|${path:$(((leaf)*64))}"
     #tree="${path:0:$((leaf*64))}${scripthash}${path:$(((leaf)*64))}"
     #iter="${tree:0:64}"
     #for (( i=64; i<${#tree}; i+=64 )); do

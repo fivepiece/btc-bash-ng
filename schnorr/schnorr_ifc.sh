@@ -19,14 +19,14 @@ schnorr_hs_verify ()
 
     q="$( bc_ecschnorr <<<"ec_schnorr_verify(${p}, ${h}, ${s});")"
     if [[ -z ${q/0//} ]]; then
-        echo "false (q == 0)" 1>&2
+        decho "false (q == 0)"
         return 1
     fi
     read v < <( sha256 "${m}${q}${a}" )
     if [[ "$v" == "$h" ]]; then
-        echo "true" 1>&2
+        decho "true"
     else
-        echo "false (v != h)" 1>&2
+        decho "false (v != h)"
     fi
 }
 
@@ -73,9 +73,9 @@ schnorr_rs_verify ()
             left_pad(v[0], curve_words); \
         } else { 0; };")"
     if [[ "${v}" == "${r}" ]]; then
-        echo "true" 1>&2
+        decho "true"
     else
-        echo "false (v != r)" 1>&2
+        decho "false (v != r)"
     fi
 }
 
@@ -130,7 +130,7 @@ schnorr_swap_sign ()
         print \"0\", compresspoint_api(r[0], r[1]), \" \"; \
         print \"0\", compresspoint_api(r_t[0], r_t[1]), \" \";")
     read h < <( sha256 "${q}${r_t}${m}" )
-    echo "h : ${h}" 1>&2
+    decho "h : ${h}"
     printf '%s ' "${c}" "${r}"
     bc_ecschnorr <<<"\
         mod(ec_schnorr_sign(${h}, ${d}, ${k}+${t}) - ${t}, curve_n); \
@@ -143,7 +143,7 @@ schnorr_swap_verify ()
 
     read r_t < <( bc_ecschnorr <<<"ecadd(${c}, ${r});" )
     read h < <( sha256 "${q}${r_t}${m}" )
-    echo "h : ${h}" 1>&2
+    decho "h : ${h}"
     v="$(bc_ecschnorr <<<" \
         if ( (${s} >= curve_n) || \
              ((${h} > 0) && (${h} >= curve_n))){ \
@@ -153,12 +153,12 @@ schnorr_swap_verify ()
         uncompresspoint_api(${q}, q[]); \
         valid = ec_schnorr_verify_api(q[0], q[1], curve_gx, curve_gy, ${h}, ${s}, curve_n, curve_p, v[]); \
         compresspoint(v[0], v[1]);")"
-    echo "r : ${r}" 1>&2
-    echo "v : ${v}" 1>&2
+    decho "r : ${r}"
+    decho "v : ${v}"
     if [[ "${v}" == "${r}" ]]; then
-        echo "true" 1>&2
+        decho "true"
     else
-        echo "false (v != r)" 1>&2
+        decho "false (v != r)"
     fi
 }
 
