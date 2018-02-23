@@ -1,12 +1,5 @@
 #!/bin/bash
 
-decho ()
-{
-    if [[ ${__debug_btcbash} == 1 ]]; then
-        echo -e "$@" 1>&2;
-    fi
-}
-
 tx_deser_version ()
 {
     if (( ${#1} != 8 )); then

@@ -1,5 +1,12 @@
 #!/bin/bash
 
+decho ()
+{
+    if [[ ${__debug_btcbash} == 1 ]]; then
+        echo -e "$@" 1>&2;
+    fi
+}
+
 btcb_home="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && echo $PWD )"
 
 if [[ -r "${btcb_home}/config/paths.sh" ]]; then
