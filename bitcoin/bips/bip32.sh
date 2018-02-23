@@ -300,3 +300,23 @@ bip32_derive_path ()
     done
     # bip32_encode "${tmpk}"
 }
+
+bip32_nonce ()
+{
+    local -u x1="$1" c1="$2" z1="$3"
+    local xkey="$(bip32_encode_master ${x1} ${c1} | bip32_encode)"
+    read z1 < <(
+        for (( i=0; i<${#z1}; i+=6 )); do
+            printf '%s/' "$(( 16#${z1:$i:6} ))"
+        done )
+    # decho "${xkey} ${z1}\n"
+    decho "\nderiving ${xkey:0:4} ..."
+    decho "path = ${z1}\n"
+    while read branch; do
+        k0="$( base58dec ${branch} )"
+        k0="${k0:90:66}"
+        decho "... ${k0}"
+    done < <(bip32_derive_path "${xkey}" "${z1}")
+    decho
+    echo "${k0}"
+}
