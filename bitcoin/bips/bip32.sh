@@ -88,6 +88,7 @@ bip32_ckdpub()
     readarray -t p_upk < <( uncompresspoint "${p_par}" )
 
     I_L="${I_val:0:64}"
+    # decho "offset = ${I_L}"
     I_R="${I_val:64}"
 
     read p_i < <( bc_ecmath <<<" \
@@ -188,8 +189,15 @@ bip32_encode_master()
         data[0]="${1}"
         data[1]="${2}"
     fi
+    if (( ${#data[0]} == 64 )); then
+        data[3]="00"
+        data[4]="${xprvVer}"
+    elif (( ${#data[0]} == 66 )); then
+        data[3]=""
+        data[4]="${xpubVer}"
+    fi
 
-    echo "${xprvVer}000000000000000000${data[1]}00${data[0]}"
+    echo "${data[4]}000000000000000000${data[1]}${data[3]}${data[0]}"
 }
 
 bip32_xpriv_branch()
