@@ -125,9 +125,9 @@ define ecdsa_verify_api(z, x, y, r, s, gx, gy, p, n){
     ecmul_api(u2, x, y, n, p, u2_pt[]);
     ecadd_api(u1_pt[0], u1_pt[1], u2_pt[0], u2_pt[1], p, r_pt[]);
 
+    # left_pad(r_pt[0], 40);
+    # left_pad(r_pt[1], 40);
     if (( r_pt[0] != 0) && (mod(r_pt[0], n) == r )){
-        # left_pad(r_pt[0], 40);
-        # left_pad(r_pt[1], 40);
         return r;
     }
     if ( r + n < p ){
@@ -289,8 +289,8 @@ define void ecdsa_recover_k_api(z1, dersig1, z2, dersig2, n, *kvals[], *dvals[])
 
 	auto sig1[], sig2[];
 
-    der2sig(dersig1, sig1[]);
-    der2sig(dersig2, sig2[]);
+    ecdsa_der2sig(dersig1, sig1[]);
+    ecdsa_der2sig(dersig2, sig2[]);
     kvals[0] = mod(((z1 - z2) * invmod(sig1[1] - sig2[1], n)), n);
     kvals[1] = mod(((z1 - z2) * invmod(sig1[1] + sig2[1], n)), n);
     kvals[2] = mod(((z1 - z2) * invmod(-sig1[1] - sig2[1], n)), n);
