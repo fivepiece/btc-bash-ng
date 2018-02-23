@@ -17,3 +17,18 @@ mkjson_credit()
         printf '"amount":%s}\n' "${amount}"
     fi
 }
+
+core_listunspent ()
+{
+    local count="${1:-1}" min_sum="${2:-0.01}" minconf=2
+    local -a in_addr=( ${3} )
+    if [[ -n ${in_addr} ]]; then
+        printf -v in_addr '"%s",' ${in_addr[@]}
+        in_addr="${in_addr%,}"
+    fi
+
+    ${clientname}-cli -named listunspent \
+        minconf=${minconf} \
+        ${in_addr+addresses="[${in_addr}]"} \
+        query_options="{\"maximumCount\":${count},\"minimumSumAmount\":${min_sum}}"
+}
