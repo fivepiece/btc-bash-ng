@@ -20,6 +20,10 @@ contracthash_verify ()
 
     tw1="$( sha256 "${nnc1}${c1}" )"
     decho "tw1 = ${tw1}"
+    # bc_ecmath <<<"ecmul_api(${tw1}, curve_gx, curve_gy, curve_n, curve_p, tw1_pt[]); \
+    #               tw1_pt = compresspoint_api(tw1_pt[0], tw1_pt[1]); \
+    #               print \"0\", tw1_pt, \" + 0\", ${nnc1}, \"\n = \n\"; \
+    #               ecadd(tw1_pt, ${nnc1});" 1>&2
     bc_ecdsa ${bc_env[contract_hash]} <<<" \
         contracthash_verify_api(${z1}, ${pub}, ${nnc1}, ${sig1}, ${tw1})"
 }
