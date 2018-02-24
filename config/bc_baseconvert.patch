@@ -1,0 +1,47 @@
+diff -cr bc-1.07.1/bc/storage.c bc-1.07.1-baseconvert.patch/bc/storage.c
+*** bc-1.07.1/bc/storage.c	2017-04-08 01:20:02.000000000 +0300
+--- bc-1.07.1-baseconvert.patch/bc/storage.c	2018-02-23 23:23:53.503504357 +0200
+***************
+*** 1018,1023 ****
+--- 1018,1024 ----
+  	
+  		/* Compute source index and make sure some structure exists. */
+  		ix = (int) bc_num2long (ex_stack->s_num);
++         ix = (int) bc_baseconvert (ix, 10, o_base);
+  		(void) get_array_num (ix, 0);    
+  	
+  		/* Push a new array and Compute Destination index */
+diff -cr bc-1.07.1/h/number.h bc-1.07.1-baseconvert.patch/h/number.h
+*** bc-1.07.1/h/number.h	2017-04-08 01:20:02.000000000 +0300
+--- bc-1.07.1-baseconvert.patch/h/number.h	2018-02-23 23:25:30.947384385 +0200
+***************
+*** 140,143 ****
+--- 140,146 ----
+  			     int leading_zero);
+  
+  void bc_out_long (long val, int size, int space, void (*out_char)(int));
++ 
++ /* recursive base conversion */
++ long bc_baseconvert(long num, int ibase, int obase);
+  #endif
+diff -cr bc-1.07.1/lib/number.c bc-1.07.1-baseconvert.patch/lib/number.c
+*** bc-1.07.1/lib/number.c	2017-04-08 01:20:02.000000000 +0300
+--- bc-1.07.1-baseconvert.patch/lib/number.c	2018-02-23 23:26:52.695288253 +0200
+***************
+*** 1703,1708 ****
+--- 1703,1717 ----
+      }
+  }
+  
++ /* recursive base conversion */
++ long
++ bc_baseconvert(long num, int ibase, int obase){
++   if(num == 0 || num == 1 || (ibase == obase))
++     return num;
++ 
++   return (num % obase) + (ibase * bc_baseconvert(num / obase, ibase, obase));
++ }
++ 
+  /* Debugging routines */
+  
+  #ifdef DEBUG

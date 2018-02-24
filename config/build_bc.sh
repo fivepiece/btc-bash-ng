@@ -31,8 +31,16 @@ build_bc ()
     fi
     tar -xaf bc-1.07.1.tar.gz
     pushd "bc-1.07.1"
-    git init .
-    git apply --verbose "${build_dir}/bc.patch" || ( echo "patch failed" 1>&2; exit 1 )
+    if ! patch --dry-run -p1 -i ../../bc_build.patch; then
+        echo "bc build patch failed" 1>&2
+        exit 1
+    fi
+    if ! patch --dry-run -p1 -i ../../bc_baseconvert.patch; then
+        echo "bc baseconvert patch failed" 1>&2
+        exit 1
+    fi
+    patch -p1 -i ../../bc_build.patch
+    patch -p1 -i ../../bc_baseconvert.patch
     ./configure --with-readline
     make
     if ! make bc; then
