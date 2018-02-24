@@ -29,7 +29,7 @@ build_bc ()
             exit 1
         fi
     fi
-    tar -xaf bc-1.07.1.tar.gz
+    tar -xzf bc-1.07.1.tar.gz
     pushd "bc-1.07.1"
     if ! patch --dry-run -p1 -i ${build_dir}/bc_build.patch; then
         echo "bc build patch failed" 1>&2
@@ -44,7 +44,7 @@ build_bc ()
     ./configure --with-readline
     make
     if ! make bc; then
-        echo -e "\n\nre-run as `./build_bc.sh 2>&1 > build_bc.log` and tell arubi" 1>&2
+        echo -e "\n\nre-run as \`./build_bc.sh 2>&1 > build_bc.log\` and tell arubi" 1>&2
         exit 1
     fi
     strip bc/bc
