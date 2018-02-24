@@ -15,7 +15,7 @@ before_install:
 
 before_script:
     - pushd ./config
-    - ./build_bc.sh
+    - ./build_bc.sh --no-check-signature
     - popd
 
 script:

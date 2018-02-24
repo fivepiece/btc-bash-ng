@@ -31,16 +31,16 @@ build_bc ()
     fi
     tar -xaf bc-1.07.1.tar.gz
     pushd "bc-1.07.1"
-    if ! patch --dry-run -p1 -i ../../bc_build.patch; then
+    if ! patch --dry-run -p1 -i ${build_dir}/bc_build.patch; then
         echo "bc build patch failed" 1>&2
         exit 1
     fi
-    if ! patch --dry-run -p1 -i ../../bc_baseconvert.patch; then
+    if ! patch --dry-run -p1 -i ${build_dir}/bc_baseconvert.patch; then
         echo "bc baseconvert patch failed" 1>&2
         exit 1
     fi
-    patch -p1 -i ../../bc_build.patch
-    patch -p1 -i ../../bc_baseconvert.patch
+    patch -p1 -i ${build_dir}/bc_build.patch
+    patch -p1 -i ${build_dir}/bc_baseconvert.patch
     ./configure --with-readline
     make
     if ! make bc; then
@@ -53,16 +53,17 @@ build_bc ()
 }
 
 unset BC_ENV_ARGS
+unset BC_LINE_LENGTH
 build_dir="$PWD"
 mkdir -p "${build_dir}/deps"
 pushd ./deps
 get_bc
-if which gpg; then
+if which gpg && [[ "${1}" != "--no-check-signature" ]]; then
     if ! verify_bc; then
         echo "signature verification failed for bc-1.07.1.tar.gz" 1>&2
         exit 1
     fi
 else
-    echo "gpg not found, skipping signature verification" 1>&2
+    echo "skipping signature verification" 1>&2
 fi
 build_bc
