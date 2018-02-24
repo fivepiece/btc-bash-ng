@@ -8,7 +8,8 @@ define void gety_fast_api(x, *yarr[]){
 
     q = (curve_p - 1) / 2;
     z = invmod(2, q);
-    ysq = mod((powmod(x, 3, curve_p) + (curve_a * x) + curve_b), curve_p);
+    # ysq = mod((powmod(x, 3, curve_p) + (curve_a * x) + curve_b), curve_p);
+    ysq = mod((powmod(x, 3, curve_p) + curve_b), curve_p);
 
     tmp = powmod(ysq, z, curve_p);
     if (! ispoint(x, tmp)){
@@ -17,7 +18,6 @@ define void gety_fast_api(x, *yarr[]){
         return;
     }
     if (tmp % 2 == 0){
-
         yarr[0] = tmp;
         yarr[1] = mod(-tmp, curve_p);
     } else {
@@ -34,7 +34,6 @@ define void getyfromx_api(x, *yvals[]){
         yvals[0] = roots[1];
         yvals[1] = roots[2];
     } else {
-        print "\n# *** Not a residue of pow 2\n";
         yvals[0] = 0;
         yvals[1] = 0;
     }
@@ -49,7 +48,6 @@ define void getxfromy_api(y, *ret[]){
         ret[1] = roots[2];
         ret[2] = roots[3];
     } else {
-        print "\n# *** Not a residue of pow 3\n";
         ret[0] = 0;
         ret[1] = 0;
         ret[2] = 0;
@@ -59,16 +57,24 @@ define void getxfromy_api(y, *ret[]){
 define getyfromx(x){
 
     auto ret[];
-    getyfromx_api(x, ret[]);
 
+    getyfromx_api(x, ret[]);
+    if (ret[0] == 0)
+    {
+        print "\n# *** Not a residue of pow 2\n";
+    }
     return ret[0];
 }
 
 define getxfromy(y){
 
     auto ret[];
-    getxfromy_api(y, ret[]);
 
+    getxfromy_api(y, ret[]);
+    if (ret[0] == 0)
+    {
+        print "\n# *** Not a residue of pow 3\n";
+    }
     return ret[0];
 }
 
@@ -91,13 +97,29 @@ define void gety(x){
 
     auto ret[];
     gety_api(x, ret[]);
-    if (ret[0] != 0){
-        print "\n# gety\n# Y1 : ", ret[0], "\n# Y2 : ", ret[1], "\n";
-    } else {
-        print "\n# not an X coordinate\n";
+    if (ret[0] == 0)
+    {
+        print "\n# not an x coordinate\n";
+        return;
     }
+    print "\n# y1 = ", ret[0];
+    print "\n# y2 = ", ret[1], "\n";
 }
 
+define void getx(y)
+{
+    auto ret[];
+
+    getyfromx(y, ret[]);
+    if (ret[0] == 0)
+    {
+        print "\n# not a y coordinate\n";
+        return;
+    }
+    print "\n# x1 = ", ret[0];
+    print "\n# x2 = ", ret[1];
+    print "\n# x3 = ", ret[2], "\n";
+}
 define ispoint_api(x, y, a, b, p){
 
     auto ysq, xcb, ax, ans;
