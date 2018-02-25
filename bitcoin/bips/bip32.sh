@@ -100,7 +100,6 @@ bip32_ckdpub()
             if ( pt2[0] == 0 ){ \
             0; \
         } else {
-                # compresspoint(pt2[0],pt2[1]);
                 compresspoint(pt2[]);
             } 
         }" )

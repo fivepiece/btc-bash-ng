@@ -156,7 +156,6 @@ define ispoint_api(x, y, a, b, p)
     return (ans == 0);
 }
 
-#define ispoint(x, y)
 define ispoint(pt[])
 {
     return ispoint_api(pt[0], pt[1], curve_a, curve_b, curve_p);
@@ -168,10 +167,8 @@ define void coords2ptarr(x, y, *ret[])
     ret[1] = y;
 }
 
-#define compresspoint_api(x, y)
 define compresspoint_api(x, y)
 {
-    # if ( ispoint(x, y) ) {
     if ( ispoint_api(x, y, curve_a, curve_b, curve_p) ) {
         if (pt[1] % 2 == 1) {
             return (x + 3*(10 ^ curve_words));
@@ -183,12 +180,10 @@ define compresspoint_api(x, y)
     }
 }
 
-#define compresspoint(x, y)
 define compresspoint(pt[])
 {
     auto res;
 
-    #res = compresspoint_api(x, y);
     res = compresspoint_api(pt[0], pt[1]);
     if (res == 0) {
         print "\n ### Not a point\n";
