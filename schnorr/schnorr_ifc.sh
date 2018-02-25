@@ -97,14 +97,16 @@ schnorr_rs_recover ()
         } else { \
             r[1] = r_yvals[1]; \
         }; \
-        if ( ! ispoint(r[0], r[1]) ){ \
+        # if ( ! ispoint(r[0], r[1]) ){ \
+        if ( ! ispoint(r[]) ){ \
             print \"invalid R\"; \
             halt; \
         }; \
         ecmul_api(${s}, curve_gx, curve_gy, curve_n, curve_p, sg[]); \
         ecadd_api(r[0], r[1], sg[0], sg[1], curve_p, rs[]); \
         ecmul_api(-invmod(${h}, curve_n), rs[0], rs[1], curve_n, curve_p, q[]); \
-        compresspoint(q[0], q[1]);"
+        compresspoint(q[]);"
+        # compresspoint(q[0], q[1]);"
 }
 
 schnorr_swap_sign ()
@@ -125,10 +127,14 @@ schnorr_swap_sign ()
         }; \
         ecmul_api(tweak, curve_gx, curve_gy, curve_n, curve_p, r_t[]); \
         ecmul_api(${d}, curve_gx, curve_gy, curve_n, curve_p, q[]); \
-        print \"0\", compresspoint_api(q[0], q[1]), \" \"; \
-        print \"0\", compresspoint_api(c[0], c[1]), \" \"; \
-        print \"0\", compresspoint_api(r[0], r[1]), \" \"; \
-        print \"0\", compresspoint_api(r_t[0], r_t[1]), \" \";")
+        compresspoint_api(q[]); \
+        compresspoint_api(c[]); \
+        compresspoint_api(r[]); \
+        compresspoint_api(r_t[]);")
+        # print \"0\", compresspoint_api(q[0], q[1]), \" \"; \
+        # print \"0\", compresspoint_api(c[0], c[1]), \" \"; \
+        # print \"0\", compresspoint_api(r[0], r[1]), \" \"; \
+        # print \"0\", compresspoint_api(r_t[0], r_t[1]), \" \";")
     read h < <( sha256 "${q}${r_t}${m}" )
     decho "h : ${h}"
     printf '%s ' "${c}" "${r}"
@@ -152,7 +158,8 @@ schnorr_swap_verify ()
         }; \
         uncompresspoint_api(${q}, q[]); \
         valid = ec_schnorr_verify_api(q[0], q[1], curve_gx, curve_gy, ${h}, ${s}, curve_n, curve_p, v[]); \
-        compresspoint(v[0], v[1]);")"
+        compresspoint(v[]);")"
+        # compresspoint(v[0], v[1]);")"
     decho "r : ${r}"
     decho "v : ${v}"
     if [[ "${v}" == "${r}" ]]; then

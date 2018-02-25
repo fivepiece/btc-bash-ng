@@ -131,7 +131,8 @@ define void jac_ecmul_std(d){
 
     ecpf_jac_stdmul(d, jpt[]);
     ecpf_jac2aff(jpt[], pt[]);
-    compresspoint(pt[0], pt[1]);
+    #compresspoint(pt[0], pt[1]);
+    compresspoint(pt[]);
 }
 
 define void ecpf_jac_ecmul_api(d, gx, gy, gz, a, n, p, *jpt[]){
@@ -165,5 +166,6 @@ define void jac_ecmul(d){
 
     ecpf_jac_ecmul(d, ret[]);
     ecpf_jac2aff(ret[], pt[]);
-    compresspoint(pt[0], pt[1]);
+    #compresspoint(pt[0], pt[1]);
+    compresspoint(pt[]);
 }

@@ -10,7 +10,7 @@ define ec_schnorr_sign(h, d, k){
     return ec_schnorr_sign_api(h, d, k, curve_n);
 }
 
-define ec_schnorr_verify_api(x, y, gx, gy, h, s, n, p, *r[]){
+define ec_schnorr_verify_api(x, y, gx, gy, h, s, n, p, *r[]){ #TODO less input
 
     auto sg[], hp[], rk[];
 
@@ -21,7 +21,8 @@ define ec_schnorr_verify_api(x, y, gx, gy, h, s, n, p, *r[]){
     ecmul_api(h, x, y, n, p, hp[]);
     ecadd_api(sg[0], sg[1], hp[0], hp[1], p, rk[]);
 
-    if ( ispoint(rk[0], rk[1]) ){
+    #if ( ispoint(rk[0], rk[1]) ){
+    if ( ispoint_api(rk[0], rk[1], curve_a, curve_b, p) ){
         r[0] = rk[0];
         r[1] = rk[1];
         return 1;

@@ -39,15 +39,15 @@ test_ecdsa_compresspubkey ()
 {
     [[ "${pubkey_c}" == "$(compresspubkey ${pubkey_u})" ]] || (return 1)
     for ((i=0; i<${#pubkeys_u[@]}; i++)); do
-        [[ ${pubkeys_c[$i]} == $(compresspubkey ${pubkeys_u[$i]}) ]] || (return 1)
+        [[ "${pubkeys_c[$i]}" == "$(compresspubkey ${pubkeys_u[$i]})" ]] || (return 1)
     done
 }
 
 test_ecdsa_uncompresspubkey ()
 {
-    [[ ${pubkey_u} == $(uncompresspubkey ${pubkey_c}) ]] || (return 1)
+    [[ "${pubkey_u}" == "$(uncompresspubkey ${pubkey_c})" ]] || (return 1)
     for ((i=0; i<${#pubkeys_u[@]}; i++)); do
-        [[ ${pubkeys_u[$i]} == $(uncompresspubkey ${pubkeys_c[$i]}) ]] || (return 1)
+        [[ "${pubkeys_u[$i]}" == $(uncompresspubkey "${pubkeys_c[$i]}") ]] || (return 1)
     done
 }
 

@@ -43,12 +43,14 @@ define void ecdouble(p){
     auto pt[], ret[];
 
     uncompresspoint_api(p, pt[]);
-    if (!ispoint(pt[0], pt[1])){
+    #if (!ispoint(pt[0], pt[1])){
+    if ( !ispoint_api(pt[]) ){
         print "\n ### Not a point\n";
         return;
     }
     ecdouble_api(pt[0], pt[1], curve_p, ret[]);
-    compresspoint(ret[0], ret[1]);
+    # compresspoint(ret[0], ret[1]);
+    compresspoint(ret[]);
 }
 
 define void ecadd_api(px, py, qx, qy, p, *ret[]){
@@ -94,14 +96,17 @@ define void ecadd(p, q){
     uncompresspoint_api(p, ptp[]);
     uncompresspoint_api(q, ptq[]);
     if (ptp[0] == 0 && ptp[1] == 0){
-        compresspoint(ptq[0], ptq[1]);
+        # compresspoint(ptq[0], ptq[1]);
+        compresspoint(ptq[]);
         return;
     }
     if (ptq[0] == 0 && ptq[1] == 0){
-        compresspoint(ptp[0], ptp[1]);
+        # compresspoint(ptp[0], ptp[1]);
+        compresspoint(ptp[]);
         return
     }
-    if ( !ispoint(ptp[0], ptp[1]) || !ispoint(ptq[0], ptq[1])){
+    #if ( !ispoint(ptp[0], ptp[1]) || !ispoint(ptq[0], ptq[1])){
+    if ( !ispoint(ptp[]) || !ispoint(ptq[]) ){
         print "\n ### Not a point ?\n";
         return;
     }
@@ -110,7 +115,8 @@ define void ecadd(p, q){
         return;
     }
     ecadd_api(ptp[0], ptp[1], ptq[0], ptq[1], curve_p, pt[]);
-    compresspoint(pt[0], pt[1]);
+    # compresspoint(pt[0], pt[1]);
+    compresspoint(pt[]);
 }
 
 define void ecmul_std_api(d, gx, gy, n, p, *ret[]){
@@ -145,7 +151,8 @@ define void ecmul_std(d){
     auto ret[];
 
     ecmul_std_api(d, curve_gx, curve_gy, curve_n, curve_p, ret[]);
-    compresspoint(ret[0], ret[1]);
+    #compresspoint(ret[0], ret[1]);
+    compresspoint(ret[]);
 }
 
 define void ecmul_api(d, qx, qy, n, p, *ret[]){
@@ -171,5 +178,6 @@ define void ecmul(d){
 
     auto ret[];
     ecmul_api(d, curve_gx, curve_gy, curve_n, curve_p, ret[]);
-    compresspoint(ret[0],ret[1]);
+    #compresspoint(ret[0],ret[1]);
+    compresspoint(ret[]);
 }

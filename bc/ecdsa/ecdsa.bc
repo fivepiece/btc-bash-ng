@@ -49,7 +49,8 @@ define void ecdsa_sign_recoverable(k, z, d, compr, *sig[]){
     }
     # sig[1] = ecdsa_sign_api(r_pt[0], k, z, d, curve_n);
     sig[2] = recid;
-    sig[3] = compresspoint_api(r_pt[0], r_pt[1]);
+    #sig[3] = compresspoint_api(r_pt[0], r_pt[1]);
+    sig[3] = compresspoint(r_pt[]);
 }
 
 define ecdsa_sig2der(r, s){
@@ -131,7 +132,8 @@ define ecdsa_verify_api(z, x, y, r, s, gx, gy, p, n){
         return r;
     }
     if ( r + n < p ){
-        if ( ispoint_api(r+n, getyfromx(r+n), curve_a, curve_b, curve_p) ){
+        #if ( ispoint_api(r+n, getyfromx(r+n), curve_a, curve_b, curve_p) ){
+        if ( ispoint_api(r+n, gety_fast(r+n), curve_a, curve_b, curve_p) ){
             return ecdsa_verify_api(z, x, y, (r + n), s, gx, gy, p, n);
         }
     }
@@ -150,16 +152,18 @@ define ecdsa_verify_der(z, pubkey, dersig){
     auto sig[];
 
     ecdsa_der2sig(dersig, sig[]);
-    if ( ispoint_api(sig[0], getyfromx(sig[0]), curve_a, curve_b, curve_p) ){
+    #if ( ispoint_api(sig[0], getyfromx(sig[0]), curve_a, curve_b, curve_p) ){
+    if ( ispoint_api(sig[0], gety_fast(sig[0]), curve_a, curve_b, curve_p) ){
         return ecdsa_verify(z, pubkey, sig[0], sig[1]);
     }
-    if ( ispoint_api(sig[0]+curve_n, getyfromx(sig[0]+curve_n), curve_a, curve_b, curve_p) ){
+    #if ( ispoint_api(sig[0]+curve_n, getyfromx(sig[0]+curve_n), curve_a, curve_b, curve_p) ){
+    if ( ispoint_api(sig[0]+curve_n, gety_fast(sig[0]+curve_n), curve_a, curve_b, curve_p) ){
         return ecdsa_verify(z, pubkey, sig[0], sig[1]);
     }
 }
 
-define void ecdsa_recover_api(z, r, s, *ret[]){
-
+define void ecdsa_recover_api(z, r, s, *ret[]) # TODO take two arrays instead of one
+{
     auto ry_arr[], invr, r1_pt[], r2_pt[], sr1_pt[], sr2_pt[], zg_pt[], mul1_pt[], mul2_pt[], rmul1_pt[], rmul2_pt[];
 
     z = mod(-z, curve_n);
@@ -195,16 +199,24 @@ define void ecdsa_recover_api(z, r, s, *ret[]){
 
 define void ecdsa_recover(z, r, s){
 
-    auto ret[];
+    auto ret[], pt1[], pt2[];
 
-    if ( ispoint_api(r, getyfromx(r), curve_a, curve_b, curve_p) ){
+    #if ( ispoint_api(r, getyfromx(r), curve_a, curve_b, curve_p) ){
+    if ( ispoint_api(r, gety_fast(r), curve_a, curve_b, curve_p) ){
         ecdsa_recover_api(z, r, s, ret[]);
-        compresspoint(ret[0],ret[1]);
-        compresspoint(ret[2],ret[3]);
+        pt1[0] = ret[0];
+        pt1[1] = ret[1];
+        pt2[0] = ret[2];
+        pt2[1] = ret[3];
+        #compresspoint_api(ret[0], ret[1]);
+        compresspoint(pt1[]);
+        #compresspoint_api(ret[2], ret[3]);
+        compresspoint(pt2[]);
     }
 
     if ( r + curve_n < curve_p ){
-        if ( ispoint_api(r + curve_n, getyfromx(r + curve_n), curve_a, curve_b, curve_p) ){
+        #if ( ispoint_api(r + curve_n, getyfromx(r + curve_n), curve_a, curve_b, curve_p) ){
+        if ( ispoint_api(r + curve_n, gety_fast(r + curve_n), curve_a, curve_b, curve_p) ){
             ecdsa_recover(z, r + curve_n, s);
         }
     }
@@ -239,7 +251,8 @@ define ecdsa_verify_recoverable_getpub(z, recsig){
         pubkey_pt[0] = rec_pubkeys[2];
         pubkey_pt[1] = rec_pubkeys[3];
     }
-    pubkey = compresspoint_api(pubkey_pt[0], pubkey_pt[1]);
+    #pubkey = compresspoint_api(pubkey_pt[0], pubkey_pt[1]);
+    pubkey = compresspoint(pubkey_pt[]);
     if ( fcomp == 0 ){
         pubkey = uncompresspoint(pubkey);
     } else {

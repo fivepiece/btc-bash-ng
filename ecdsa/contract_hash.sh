@@ -10,8 +10,14 @@ contracthash_sign ()
 
     bc_ecdsa ${bc_env[contract_hash]} <<<" \
         contracthash_sign_api(${k0}, ${tw1}, ${z1}, ${d1}, contract[]); \
-        compresspoint(contract[0], contract[1]); \
-        ecdsa_sig2der(contract[2], contract[3]);"
+        nnc1[0] = contract[0]; \
+        nnc1[1] = contract[1]; \
+        sig1[0] = contract[2]; \
+        sig1[1] = contract[3]; \
+        # compresspoint_api(contract[0], contract[1]); \
+        compresspoint(nnc1[]); \
+        # ecdsa_sig2der(contract[2], contract[3]); \
+        ecdsa_sig2der(sig1[0], sig1[1]);"
 }
 
 contracthash_verify ()
@@ -21,7 +27,8 @@ contracthash_verify ()
     tw1="$( sha256 "${nnc1}${c1}" )"
     decho "tw1 = ${tw1}"
     # bc_ecmath <<<"ecmul_api(${tw1}, curve_gx, curve_gy, curve_n, curve_p, tw1_pt[]); \
-    #               tw1_pt = compresspoint_api(tw1_pt[0], tw1_pt[1]); \
+#    #               tw1_pt = compresspoint_api(tw1_pt[0], tw1_pt[1]); \
+    #               tw1_pt = compresspoint(tw1_pt[]); \
     #               print \"0\", tw1_pt, \" + 0\", ${nnc1}, \"\n = \n\"; \
     #               ecadd(tw1_pt, ${nnc1});" 1>&2
     bc_ecdsa ${bc_env[contract_hash]} <<<" \
@@ -53,8 +60,14 @@ contracthash_auth_sign ()
 
     bc_ecdsa ${bc_env[contract_hash]} <<<" \
         contracthash_sign_api(${k0}, ${tw1}, ${z1}, ${d1}, contract[]); \
-        compresspoint(contract[0], contract[1]); \
-        ecdsa_sig2der(contract[2], contract[3]);"
+        nnc1[0] = contract[0]; \
+        nnc1[1] = contract[1]; \
+        sig1[0] = contract[2]; \
+        sig1[1] = contract[3]; \
+        # compresspoint_api(contract[0], contract[1]); \
+        compresspoint(nnc1[]); \
+        # ecdsa_sig2der(contract[2], contract[3]); \
+        ecdsa_sig2der(sig1[0], sig1[1]);"
 }
 
 contracthash_auth_verify ()
