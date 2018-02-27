@@ -23,14 +23,16 @@ alias cleanhex="tr -d ' \n\t' | tr [:lower:] [:upper:]; echo 1>&2"
 hex2bin()
 {
     # if $1 is empty, read from stdin
-    # TODO find a way to expand '<<<"$1"' somehow to re-use the loop
+    # TODONE find a way to expand '<<<"$1"' somehow to re-use the loop
+    # bash only, it's ' <<<"${1:-$(< /dev/stdin)}" ', but it's slower
+    # tl;dr this one seems pretty fast when "small" (say 64 bytes) values
+    # are hex2bin'd repeatedly
     if [[ -z "$1" ]]; then
-
-        while read -N2 byte; do
+        while read -r -N2 byte; do
            printf '%b' "\\x${byte}"
         done
     else
-        while read -N2 byte; do
+        while read -r -N2 byte; do
            printf '%b' "\\x${byte}"
         done <<<"$1"
     fi
