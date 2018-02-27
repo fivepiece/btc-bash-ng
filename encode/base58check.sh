@@ -69,5 +69,5 @@ base58dec()
         hex = base_restore(58, c[]); \
         ibase=16; \
         if (wordlen(hex) % 2) { print 0; }; \
-        hex;"
+        print hex, \"\n\";"
 }
