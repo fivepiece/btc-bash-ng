@@ -2,14 +2,15 @@
 
 # simple functions to convert hex to binary then hash it.
 # openssl currently a dependency for ripemd160
+# TODO faster
 
 sha224()
 {
     local -u digest
     if [[ -z "$1" ]]; then
-        read -N56 digest < <( hex2bin </proc/self/fd/0 | sha224sum -b )
+        read -r -N56 digest < <( sha224sum -b <(hex2bin </dev/stdin) )
     else
-        read -N56 digest < <( hex2bin "$1" | sha224sum -b )
+        read -r -N56 digest < <( sha224sum -b <(hex2bin "$1") )
     fi
     printf '%s\n' "${digest}"
 }
@@ -18,9 +19,9 @@ sha256()
 {
     local -u digest
     if [[ -z "$1" ]]; then
-        read -N64 digest < <( hex2bin </proc/self/fd/0 | sha256sum -b )
+        read -r -N64 digest < <( sha256sum -b <(hex2bin </dev/stdin) )
     else
-        read -N64 digest < <( hex2bin "$1" | sha256sum -b )
+        read -r -N64 digest < <( sha256sum -b <(hex2bin "$1") )
     fi
     printf '%s\n' "${digest}"
 }
@@ -29,9 +30,9 @@ sha384()
 {
     local -u digest
     if [[ -z "$1" ]]; then
-        read -N96 digest < <( hex2bin </proc/self/fd/0 | sha384sum -b )
+        read -r -N96 digest < <( sha384sum -b <(hex2bin </dev/stdin) )
     else
-        read -N96 digest < <( hex2bin "$1" | sha384sum -b )
+        read -r -N96 digest < <( sha384sum -b <(hex2bin "$1") )
     fi
     printf '%s\n' "${digest}"
 }
@@ -40,9 +41,9 @@ sha512()
 {
     local -u digest
     if [[ -z "$1" ]]; then
-        read -N128 digest < <( hex2bin </proc/self/fd/0 | sha512sum -b )
+        read -r -N128 digest < <( sha512sum -b <(hex2bin </dev/stdin) )
     else
-        read -N128 digest < <( hex2bin "$1" | sha512sum -b )
+        read -r -N128 digest < <( sha512sum -b <(hex2bin "$1") )
     fi
     printf '%s\n' "${digest}"
 }
@@ -52,31 +53,27 @@ ripemd160()
 {
     local -u digest
     if [[ -z "$1" ]]; then
-        read -N40 digest < <( hex2bin </proc/self/fd/0 | openssl rmd160 -r )
+        read -r -N40 digest < <( openssl rmd160 -r <(hex2bin </dev/stdin) )
     else
-        read -N40 digest < <( hex2bin "$1" | openssl rmd160 -r )
+        read -r -N40 digest < <( openssl rmd160 -r <(hex2bin "$1") )
     fi
     printf '%s\n' "${digest}"
 }
 
 hash256()
 {
-    local -u digest
     if [[ -z "$1" ]]; then
-        read -N64 digest < <( sha256 </proc/self/fd/0 | sha256 )
+        sha256 < <(sha256 </dev/stdin)
     else
-        read -N64 digest < <( sha256 "$1" | sha256 )
+        sha256 < <(sha256 "$1")
     fi
-    printf '%s\n' "${digest}"
 }
 
 hash160()
 {
-    local -u digest
     if [[ -z "$1" ]]; then
-        read -N40 digest < <( sha256 </proc/self/fd/0 | ripemd160 )
+        ripemd160 < <(sha256 </dev/stdin)
     else
-        read -N40 digest < <( sha256 "$1" | ripemd160 )
+        ripemd160 < <(sha256 "$1")
     fi
-    printf '%s\n' "${digest}"
 }
