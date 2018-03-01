@@ -19,6 +19,7 @@ source "${btcb_home}/bc/bc_env.sh"
 
 btcb_env=( \
     base/binary.sh base/string.sh base/number.sh base/int_convert.sh base/pattern.sh \
+    ecdsa/curves/koblitz.sh \
     hash/logic.sh hash/hexhash.sh hash/hmac.sh hash/merkle_tree.sh \
     encode/base58check.sh \
     ecdsa/rfc6979.sh ecdsa/ecdsa_ifc.sh ecdsa/contract_hash.sh \
@@ -29,3 +30,4 @@ for shenv in ${btcb_env[@]}; do
 done
 
 source "${btcb_home}/bitcoin/activate_bitcoin.sh"
+secp256k1
