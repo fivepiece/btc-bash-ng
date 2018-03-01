@@ -1,13 +1,18 @@
 #!/bin/bash
 
+opad_128="$( input_mkbitmap '5C' '128' )"
+ipad_128="$( input_mkbitmap '36' '128' )"
+opad_256="$( input_mkbitmap '5C' '256' )"
+ipad_256="$( input_mkbitmap '36' '256' )"
+
 hmac_blocklen()
 {
     case "$1" in
         sha224|sha256)
-            echo '80'
+            printf '%s ' '128' "${opad_128}" "${ipad_128}"
             ;;
         sha384|sha512)
-            echo '100'
+            printf '%s ' '256' "${opad_256}" "${ipad_256}"
             ;;
     esac
 }
@@ -15,44 +20,26 @@ hmac_blocklen()
 # https://www.ietf.org/rfc/rfc2104.txt
 hmac()
 {
-    local -u key="$1" text="$2"
+    local -u key="$1" text="$2" opad ipad
     local -l hashfunc="$3" blocklen
-    read blocklen < <( hmac_blocklen "${hashfunc}" )
+    read -ers blocklen opad ipad < <( hmac_blocklen "${hashfunc}" )
 
     # keys larger than the blocksize are hashed
-    if (( ${#key} > $((16#${blocklen})) ))
+    if (( ${#key} > ${blocklen} ))
     then
         read key < <( "${hashfunc}" "${key}" )
     fi
 
-    local -u knw
-    # number of null words to consider at the start of the key.
-    # the key "1" will become "100..00", and the key "00..001"
-    # will be treated as '0x01'
-    #
-    knw="${key%%${key/*(0)/}}"
-
-    local -au pads
-    # steps (1) (2) (5)
-    # pads[0] = key
-    # pads[1] = opad
-    # pads[2] = ipad
-    #
-    readarray -t pads < <( bc_hmac <<<"hmac(${#knw}, ${key}, set_hmac_${hashfunc}());" 2>/dev/null)
-
-    # step (3)
-    #text="${pads[2]}${text}"
-
+    # (1)
+    key="$( right_pad "${key}" "${blocklen}" )"
+    # (2)
+    ipad="$( bwxor "${key}" "${ipad}" )"
     # steps (3) (4)
-    read text < <( "${hashfunc}" "${pads[1]}${text}" )
-
-    # step (6)
-    #text="${pads[1]}${text}"
-
+    read text < <( "${hashfunc}" "${ipad}${text}" )
+    # (5)
+    opad="$( bwxor "${key}" "${opad}" )"
     # steps (6) (7)
-    #read text < <( "${hashfunc}" "${pads[1]}${text}" )
-
-    ${hashfunc} "${pads[0]}${text}"
+    ${hashfunc} "${opad}${text}"
 }
 
 hmac_sha256()
