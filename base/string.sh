@@ -26,6 +26,16 @@ lpadhexstr()
     printf "%0${n}d%s\n" '0' "$1"
 }
 
+right_pad()
+{
+    rpadhexstr "$1" "$((${2} - ${#1}))"
+}
+
+left_pad()
+{
+    lpadhexstr "$1" "$((${2} - ${#1}))"
+}
+
 # reverse chunks of n words in hexstr
 # the length of hexstr must be a multiple of the chunk
 # setting a chunk size is only possible with $2
