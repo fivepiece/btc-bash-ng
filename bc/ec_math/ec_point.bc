@@ -170,7 +170,7 @@ define void coords2ptarr(x, y, *ret[])
 define compresspoint_api(x, y)
 {
     if ( ispoint_api(x, y, curve_a, curve_b, curve_p) ) {
-        if (pt[1] % 2 == 1) {
+        if (y % 2 == 1) {
             return (x + 3*(10 ^ curve_words));
         } else {
             return (x + 2*(10 ^ curve_words));
