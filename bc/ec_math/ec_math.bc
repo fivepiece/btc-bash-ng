@@ -2,8 +2,8 @@
 
 # functions for operations on an elliptic curve
 
-define slope_api(px, py, qx, qy, p){
-
+define slope_api(px, py, qx, qy, p)
+{
     auto num, den;
 
     if (qy - py != 0){
@@ -20,8 +20,8 @@ define slope_api(px, py, qx, qy, p){
     return (mod((num * den),p));
 }
 
-define slope(p, q){
-
+define slope(p, q)
+{
     auto parr[], qarr[];
 
     uncompresspoint_api(p, parr[]);
@@ -29,8 +29,8 @@ define slope(p, q){
     return slope_api(parr[0], parr[1], qarr[0], qarr[1], curve_p);
 }
 
-define void ecdouble_api(x, y, p, *ret[]){
-
+define void ecdouble_api(x, y, p, *ret[])
+{
     auto tangent;
 
     tangent = mod((3 * x^2 + curve_a) * invmod(2 * y, p), curve_p); #TODO COMON!!  curve_p -> p
@@ -38,8 +38,8 @@ define void ecdouble_api(x, y, p, *ret[]){
     ret[1] = mod((tangent * (x - ret[0]) - y),p);
 }
 
-define void ecdouble(p){
-
+define void ecdouble(p)
+{
     auto pt[], ret[];
 
     uncompresspoint_api(p, pt[]);
@@ -51,9 +51,10 @@ define void ecdouble(p){
     compresspoint(ret[]);
 }
 
-define void ecadd_api(px, py, qx, qy, p, *ret[]){
-
+define void ecadd_api(px, py, qx, qy, p, *ret[])
+{
     auto slp;
+
     if (px == 0){
 
         ret[0] = qx;
@@ -88,9 +89,10 @@ define void ecadd_api(px, py, qx, qy, p, *ret[]){
 */
 }
 
-define void ecadd(p, q){
-
+define void ecadd(p, q)
+{
     auto ptp[], ptq[], pt[];
+
     uncompresspoint_api(p, ptp[]);
     uncompresspoint_api(q, ptq[]);
     if (ptp[0] == 0 && ptp[1] == 0){
@@ -113,8 +115,8 @@ define void ecadd(p, q){
     compresspoint(pt[]);
 }
 
-define void ecmul_std_api(d, gx, gy, n, p, *ret[]){
-
+define void ecmul_std_api(d, gx, gy, n, p, *ret[])
+{
     auto parr[];
 
     parr[0] = gx;
@@ -140,16 +142,16 @@ define void ecmul_std_api(d, gx, gy, n, p, *ret[]){
     }
 }
 
-define void ecmul_std(d){
-
+define void ecmul_std(d)
+{
     auto ret[];
 
     ecmul_std_api(d, curve_gx, curve_gy, curve_n, curve_p, ret[]);
     compresspoint(ret[]);
 }
 
-define void ecmul_api(d, qx, qy, n, p, *ret[]){
-
+define void ecmul_api(d, qx, qy, n, p, *ret[])
+{
     auto lambda_q[], k[], p1[], p2[];
 
     if (d < 0){
@@ -167,8 +169,8 @@ define void ecmul_api(d, qx, qy, n, p, *ret[]){
     ecadd_api(p1[0], p1[1], p2[0], p2[1], p, ret[]);
 }
 
-define void ecmul(d){
-
+define void ecmul(d)
+{
     auto ret[];
     ecmul_api(d, curve_gx, curve_gy, curve_n, curve_p, ret[]);
     compresspoint(ret[]);
