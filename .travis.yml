@@ -1,6 +1,9 @@
 sudo: required
 dist: stretch
 language: bash
+cache:
+  directories:
+    - $HOME/cache/bc
 addons:
   apt:
     packages:
@@ -8,8 +11,12 @@ addons:
 notifications:
   irc: "ircs://chat.freenode.net:7070/#p534"
 before_script:
+  - mkdir -pv $HOME/cache/bc
+  - mkdir -pv ./config/deps
+  - if [[ -r $HOME/cache/bc/bc-1.07.1.tar.gz ]]; then cp -v $HOME/cache/bc/bc-1.07.1.tar.gz{,.sig} ./config/deps; fi;
   - pushd ./config
   - ./build_bc.sh --no-check-signature
+  - cp -v ./deps/bc-1.07.1.tar.gz* $HOME/cache/bc/
   - popd
 script:
   - time source ./test.sh
