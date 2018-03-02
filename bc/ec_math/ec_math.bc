@@ -33,7 +33,8 @@ define void ecdouble_api(x, y, p, *ret[])
 {
     auto tangent;
 
-    tangent = mod((3 * x^2 + curve_a) * invmod(2 * y, p), curve_p); #TODO COMON!!  curve_p -> p
+    #tangent = mod((3 * x^2 + curve_a) * invmod(2 * y, p), curve_p); #TODO COMON!!  curve_p -> p
+    tangent = mod((3 * x^2 + curve_a) * invmod(2 * y, p), p); #TODO COMON!!  curve_p -> p
     ret[0] = mod(tangent^2 - 2*x, p);
     ret[1] = mod((tangent * (x - ret[0]) - y),p);
 }
