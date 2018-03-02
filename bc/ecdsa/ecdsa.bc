@@ -49,7 +49,7 @@ define void ecdsa_sign_recoverable(k, z, d, compr, *sig[]){
     }
     # sig[1] = ecdsa_sign_api(r_pt[0], k, z, d, curve_n);
     sig[2] = recid;
-    sig[3] = compresspoint(r_pt[]);
+    sig[3] = compresspoint_api(r_pt[0], r_pt[1]);
 }
 
 define ecdsa_sig2der(r, s){
@@ -243,7 +243,7 @@ define ecdsa_verify_recoverable_getpub(z, recsig){
         pubkey_pt[0] = rec_pubkeys[2];
         pubkey_pt[1] = rec_pubkeys[3];
     }
-    pubkey = compresspoint(pubkey_pt[]);
+    pubkey = compresspoint_api(pubkey_pt[0], pubkey_pt[1]);
     if ( fcomp == 0 ){
         pubkey = uncompresspoint(pubkey);
     } else {
