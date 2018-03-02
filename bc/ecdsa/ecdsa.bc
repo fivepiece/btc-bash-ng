@@ -153,10 +153,11 @@ define ecdsa_verify_der(z, pubkey, dersig){
     }
 }
 
-define void ecdsa_recover_api(z, r, s, *ret[]) # TODO take two arrays instead of one
+define void ecdsa_recover_raw(z, r, s, g, *ret[]) # TODO take two arrays instead of one
 {
-    auto ry_arr[], invr, r1_pt[], r2_pt[], sr1_pt[], sr2_pt[], zg_pt[], mul1_pt[], mul2_pt[], rmul1_pt[], rmul2_pt[];
+    auto g_pt[], ry_arr[], invr, r1_pt[], r2_pt[], sr1_pt[], sr2_pt[], zg_pt[], mul1_pt[], mul2_pt[], rmul1_pt[], rmul2_pt[];
 
+    uncompresspoint_api(g, g_pt[]);
     z = mod(-z, curve_n);
     gety_api(r, ry_arr[]);
     invr = invmod(r, curve_n);
@@ -165,7 +166,7 @@ define void ecdsa_recover_api(z, r, s, *ret[]) # TODO take two arrays instead of
 
     ecmul_api(s, r, ry_arr[1], curve_n, curve_p, r2_pt[]);
 
-    ecmul_api(z, curve_gx, curve_gy, curve_n, curve_p, zg_pt[]);
+    ecmul_api(z, g_pt[0], g_pt[1], curve_n, curve_p, zg_pt[]);
 
     ecadd_api(r1_pt[0], r1_pt[1], zg_pt[0], zg_pt[1], curve_p, mul1_pt[]);
 
@@ -186,6 +187,11 @@ define void ecdsa_recover_api(z, r, s, *ret[]) # TODO take two arrays instead of
         ret[2] = rmul1_pt[0];
         ret[3] = rmul1_pt[1];
     }
+}
+
+define void ecdsa_recover_api(z, r, s, *ret[])
+{
+    ecdsa_recover_raw(z, r, s, curve_g, ret[]);
 }
 
 define void ecdsa_recover(z, r, s){
@@ -314,33 +320,4 @@ define void ecdsa_recover_k(z1, dersig1, z2, dersig2){
     kvals[0]; kvals[1]; kvals[2]; kvals[3];
     print "possible d values :\n";
     dvals[0]; dvals[1]; dvals[2]; dvals[3];
-}
-
-define void ecdsa_recover_raw(z, r, s, g, n, p, *ret[]){
-
-    auto gpt[], ry_arr[], invr, r1_pt[], r2_pt[], sr1_pt[], sr2_pt[], zg_pt[], mul1_pt[], mul2_pt[], rmul1_pt[], rmul2_pt[];
-
-    uncompresspoint_api(g, gpt[]);
-    z = mod(-z, n);
-    gety_api(r, ry_arr[]);
-    invr = invmod(r, n);
-
-    ecmul_api(s, r, ry_arr[0], n, p, r1_pt[]);
-
-    ecmul_api(s, r, ry_arr[1], n, p, r2_pt[]);
-
-    ecmul_api(z, gpt[0], gpt[1], n, p, zg_pt[]);
-
-    ecadd_api(r1_pt[0], r1_pt[1], zg_pt[0], zg_pt[1], p, mul1_pt[]);
-
-    ecadd_api(r2_pt[0], r2_pt[1], zg_pt[0], zg_pt[1], p, mul2_pt[]);
-
-    ecmul_api(invr, mul1_pt[0], mul1_pt[1], n, p, rmul1_pt[]);
-
-    ecmul_api(invr, mul2_pt[0], mul2_pt[1], n, p, rmul2_pt[]);
-
-    ret[0] = rmul1_pt[0];
-    ret[1] = rmul1_pt[1];
-    ret[2] = rmul2_pt[0];
-    ret[3] = rmul2_pt[1];
 }
