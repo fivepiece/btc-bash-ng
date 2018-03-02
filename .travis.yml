@@ -1,22 +1,15 @@
 sudo: required
-dist: jessie
+dist: stretch
 language: bash
-
+addons:
+  apt:
+    packages:
+      - libreadline-dev
 notifications:
-    irc: "ircs://chat.freenode.net:7070/#p534"
-
-bash:
-    - '4.3'
-    - '4.4'
-
-before_install:
-    - sudo apt-get update -qq
-    - sudo apt-get install -y libreadline-dev wget
-
+  irc: "ircs://chat.freenode.net:7070/#p534"
 before_script:
-    - pushd ./config
-    - ./build_bc.sh --no-check-signature
-    - popd
-
+  - pushd ./config
+  - ./build_bc.sh --no-check-signature
+  - popd
 script:
-    - source ./test.sh
+  - time source ./test.sh
