@@ -7,7 +7,7 @@ btcb_bit_env=( \
     script/script_num.sh script/keys.sh script/scriptpubkey.sh \
     transaction.sh parse.sh  \
     bips/bip32.sh \
-    jsonrpc/json.sh )
+    jsonrpc/json.sh jsonrpc/sign_message.sh )
 
 set_network_versions() {
 
