@@ -72,13 +72,14 @@ core_signmessage_verify ()
     local addr="$1" sig="$2" msg="$3" pubkey
     read pubkey < <( core_signmessage_recover_pubkey "${sig}" "${msg}" )
     if [[ "$(key_pub2addr ${pubkey})" != "${addr}" ]]; then
-        echo 0 1>&2
+        echo 0
         return 1
     else
         # not needed since recovery and checking against the address is enough
         # local dersig="$( sig2der "${r}" "${s}" )"
         # verify "${z}" "${pubkey}" "${dersig}"
         ###
+        echo 1
         return 0
     fi
 }
