@@ -19,9 +19,8 @@ set_network_versions() {
             p2shVer="05"
             xpubVer="0488B21E"
             xprvVer="0488ADE4"
+            swHrp="bc"
             clientname="mainnet"
-            p2wpkhVer="bc1qw"
-            p2wshVer="bc1qr"
             ;;
 
         testnet|regtest|mastcoin)
@@ -33,17 +32,15 @@ set_network_versions() {
             clientname="$1"
             case "$1" in
                 testnet)
-                    p2wpkhVer="tb1qw"
-                    p2wshVer="tb1qr"
+                    swHrp="tb"
                     ;;
                 regtest)
-                    p2wpkhVer="bcrt1qw"
-                    p2wshVer="bcrt1qr"
+                    swHrp="bcrt"
                     ;;
             esac
 	esac
-    p2wpkhPref="0016"
-    p2wshPref="0020"
+    p2wpkhVer="0014"
+    p2wshVer="0020"
 }
 
 for shenv in ${btcb_bit_env[@]}; do
