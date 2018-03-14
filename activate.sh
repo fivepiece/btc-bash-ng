@@ -21,7 +21,7 @@ btcb_env=( \
     base/binary.sh base/string.sh base/number.sh base/int_convert.sh base/pattern.sh \
     ecdsa/curves/koblitz.sh \
     hash/logic.sh hash/hexhash.sh hash/hmac.sh hash/merkle_tree.sh \
-    encode/base58check.sh \
+    encode/base58check.sh encode/bech32_segwit.sh \
     ecdsa/rfc6979.sh ecdsa/ecdsa_ifc.sh ecdsa/contract_hash.sh \
     schnorr/schnorr_ifc.sh )
 
