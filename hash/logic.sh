@@ -2,7 +2,7 @@
 
 _bitwise ()
 {
-    local num1="$1" num2="$2" max_len
+    local num1="$1" num2="$2" max_len i rem
 
     if (( ${#num1} > ${#num2} )); then
         max_len="${#num1}"
@@ -14,10 +14,14 @@ _bitwise ()
         num1="${num1// /0}"
     fi
 
-    for ((i=0; i<${max_len}; i+=16 ))
+    rem=$(( ${max_len} % 16 ))
+    for ((i=0; i<${max_len}-${rem}; i+=16 ))
     do
         printf "%016X" "$(( 0x${num1:${i}:16} ${3} 0x${num2:${i}:16} ))"
     done
+    if (( ${rem} )); then
+        printf "%0${rem}X" "$(( 0x${num1:${i}} ${3} 0x${num2:${i}} ))"
+    fi
     echo
 }
 
