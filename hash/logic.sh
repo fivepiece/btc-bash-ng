@@ -1,6 +1,6 @@
 #!/bin/bash
 
-_bitwise ()
+_bitwise_binary ()
 {
     local num1="$1" num2="$2" max_len i rem
 
@@ -25,17 +25,59 @@ _bitwise ()
     echo
 }
 
+_bitwise_unary ()
+{
+    local num="$1" i rem ret
+
+    if (( ${#num} <= 16 )); then
+        printf -v ret "%0${#num}X" "$(( ${2} 0x${num} ))"
+        echo "${ret:$((16-${#num}))}"
+        return
+    fi
+    rem=$(( ${#num} % 16 ))
+    for ((i=0; i<${#num}-${rem}; i+=16 ))
+    do
+        printf "%X" "$(( ${2} 0x${num:${i}:16} ))"
+    done
+    if (( ${rem} )); then
+        printf -v ret "%X" "$(( ${2} 0x${num:${i}} ))"
+        echo "${ret:$((16-${rem}))}"
+        return
+    fi
+    echo
+}
+
 bwor ()
 {
-    _bitwise "$1" "$2" '|'
+    _bitwise_binary "$1" "$2" '|'
 }
 
 bwand ()
 {
-    _bitwise "$1" "$2" '&'
+    _bitwise_binary "$1" "$2" '&'
 }
 
 bwxor ()
 {
-    _bitwise "$1" "$2" '^'
+    _bitwise_binary "$1" "$2" '^'
+}
+
+bwnot ()
+{
+    _bitwise_unary "$1" '~'
+}
+
+bwnor ()
+{
+    bwnot "$(bwor "$1" "$2" )"
+}
+
+bwnand ()
+{
+    bwnot "$(bwand "$1" "$2")"
+}
+
+bwxnor ()
+{
+    bwnot "$(bwxor "$1" "$2" )"
 }
