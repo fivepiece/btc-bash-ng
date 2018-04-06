@@ -60,7 +60,8 @@ key_wif2pub ()
     local -u prihex pubkey;
     read privhex < <( base58dec "${1}" )
     if (( ${#privhex} == 74 )); then
-        uncompresspoint "$( key_priv2pub "${privhex:2:64}" )"
+        #uncompresspoint "$( key_priv2pub "${privhex:2:64}" )"
+        uncompresspubkey "$( key_priv2pub "${privhex:2:64}" )"
     else
         key_priv2pub "${privhex:2:64}"
     fi
