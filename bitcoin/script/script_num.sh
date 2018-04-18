@@ -28,7 +28,7 @@ script_ser_num ()
 {
     local -u sernum
 
-    if script_is_opnum; then
+    if script_is_opnum "${1}"; then
 
         echo "0x${op_num[${1}]}"
         return
