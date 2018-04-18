@@ -97,35 +97,29 @@ data_pushmany()
 script_serialize ()
 { 
     local -a script
-    read -r -a script <<< "${@^^}"
-
-    local ser
-    ser=""
+    read -r -a script <<<"${@}"
+    local pushdata pushnum hextext pushtext ser=""
 
     for ((i=0; i<${#script[@]}; i++ )); do
         
         elem="${script[${i}]}"
-        read is_bignum < <( script_is_bignum "${elem}" )
 
-        if [[ "${elem}" =~ "0X" ]]; then   # literal element: 0x7093, 0xAABB00 ...
-                        
-            ser+="${elem/0X/}"
-
-        elif (( "${is_bignum}" )); then    # bignum [-2^31+1, 2^31-1]: -100, 999,  1512, 0 ...
-
+        if [[ "${elem:0:2}" == "0x" ]]; then   # literal element: 0x7093, 0xAABB00 ...
+            ser+="${elem/0x/}"
+        elif [[ "${elem:0:1}" == "@" ]]; then  # hex data push: @AA10 -> 02AA10, @0A -> 5A, @81 -> 4F ...
+            read pushdata < <( data_pushdata "${elem:1}" )
+            pushdata="${pushdata[*]// /}"
+            ser+="${pushdata//0x/}"
+        elif script_is_bignum "${elem}"; then  # bignum [-2^31+1, 2^31-1]: -100, 999,  1512, 0 ...
             read pushnum < <( script_ser_num "${elem}" )
             pushnum="${pushnum[*]// /}"
             ser+="${pushnum//0x/}"
-
-        elif [[ "${elem}" =~ "@" ]]; then  # hex data push: @AA10 -> 02AA10, @0A -> 5A, @81 -> 4F ...
-
-            read pushdata < <( data_pushdata "${elem/$'@'/}" )
-#            pushdata="${pushdata[*]// /}"
-            read serpush < <( script_serialize "${pushdata[@]}" )
-#            ser+="${pushdata//0x/}"
-            ser+="${serpush}"
-
-        else                               # opcode element (or INVALIDOPCODE)
+        elif [[ "${elem:0:1}" == "%" ]]; then  # text %abcd -> 0x0461626364
+            read hextext < <( bin2hex <<<"${elem:1}" )
+            read pushtext < <( data_pushdata "${hextext:0:-2}" )
+            pushtext="${pushtext[*]// /}"
+            ser+="${pushtext//0x/}"
+        else                                   # opcode element (or INVALIDOPCODE)
             ser+="${opcodes[${elem}]:-FF}"
         fi
     done

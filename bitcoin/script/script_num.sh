@@ -2,24 +2,26 @@
 
 script_is_bignum ()
 {
-    if [[ "${1}" =~ [^0-9-] ]]; then
-
-        echo '0'
-        return
+    if [[ ! ${1} =~ ^-?[0-9]+$ ]]; then
+        return 1
     fi
-
-    echo "$(( $(( ${1} > -$((2**31)) )) && $(( ${1} < $((2**31)) ))  ))"
+    if (( ( ${1} > -(2**31) ) && ( ${1} < (2**31) )  )); then
+        return 0
+    else
+        return 1
+    fi
 }
 
 script_is_opnum ()
 {
-    if [[ "${1}" =~ [^0-9-] ]]; then
-
-        echo '0'
-        return
+    if [[ ${1} =~ ^[0-9][1-6]?$ ]]; then
+        return 1
     fi
-
-    echo "$(( $(( ${1} >= -1 )) && $(( ${1} <= 16 ))  ))"
+    if (( ( ${1} >= -1 ) && ( ${1} <= 16 ) )); then
+        return 0
+    else
+        return 1
+    fi
 }
 
 script_ser_num ()
