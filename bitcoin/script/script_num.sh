@@ -14,7 +14,7 @@ script_is_bignum ()
 
 script_is_opnum ()
 {
-    if [[ ${1} =~ ^[0-9][1-6]?$ ]]; then
+    if [[ ! ${1} =~ ^[0-9][1-6]?$ ]]; then
         return 1
     fi
     if (( ( ${1} >= -1 ) && ( ${1} <= 16 ) )); then
