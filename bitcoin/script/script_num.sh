@@ -26,10 +26,9 @@ script_is_opnum ()
 
 script_ser_num ()
 {
-    local -u sernum is_opnum
+    local -u sernum
 
-    read is_opnum < <( script_is_opnum "${1}" )
-    if (( "${is_opnum}" )); then
+    if script_is_opnum; then
 
         echo "0x${op_num[${1}]}"
         return
