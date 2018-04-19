@@ -98,7 +98,7 @@ script_serialize ()
 { 
     local -a script
     read -r -a script <<<"${@}"
-    local pushdata pushnum hextext pushtext ser=""
+    local pushdata serdata pushnum hextext ser=""
 
     for ((i=0; i<${#script[@]}; i++ )); do
         
@@ -108,17 +108,17 @@ script_serialize ()
             ser+="${elem/0x/}"
         elif [[ "${elem:0:1}" == "@" ]]; then  # hex data push: @AA10 -> 02AA10, @0A -> 5A, @81 -> 4F ...
             read pushdata < <( data_pushdata "${elem:1}" )
-            pushdata="${pushdata[*]// /}"
-            ser+="${pushdata//0x/}"
+            read serdata < <( script_serialize "${pushdata}" )
+            ser+="${serdata}"
         elif script_is_bignum "${elem}"; then  # bignum [-2^31+1, 2^31-1]: -100, 999,  1512, 0 ...
             read pushnum < <( script_ser_num "${elem}" )
             pushnum="${pushnum[*]// /}"
             ser+="${pushnum//0x/}"
         elif [[ "${elem:0:1}" == "%" ]]; then  # text %abcd -> 0x0461626364
             read hextext < <( bin2hex <<<"${elem:1}" )
-            read pushtext < <( data_pushdata "${hextext:0:-2}" )
-            pushtext="${pushtext[*]// /}"
-            ser+="${pushtext//0x/}"
+            read pushdata < <( data_pushdata "${hextext:0:-2}" )
+            read serdata < <( script_serialize "${pushdata}" )
+            ser+="${serdata}"
         else                                   # opcode element (or INVALIDOPCODE)
             ser+="${opcodes[${elem}]:-FF}"
         fi
