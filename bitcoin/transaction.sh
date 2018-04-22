@@ -195,12 +195,12 @@ tx_bip141_iswitprog ()
 
 tx_bip141_serwitness()
 {
-    local -au stack=( $1 ) serstack
+    local -a stack=( $1 )
+    local -au serstack
     local -u sersize bn elem stacksize
 
     for (( i=0; i<${#stack[@]}; i++ )); do
-        read bn < <( script_is_opnum "${stack[$i]}" )
-        if [[ ${bn} == "1" ]]; then
+        if script_is_opnum "${stack[$i]}"; then
             if [[ ${stack[$i]} == "0" ]]; then
                 serstack[$i]="00"
             else
@@ -208,8 +208,7 @@ tx_bip141_serwitness()
                 continue
             fi
         fi
-        read bn < <( script_is_bignum "${stack[$i]}" )
-        if [[ ${bn} == "1" ]]; then
+        if script_is_bignum "${stack[$i]}"; then
             read serstack[$i] < <( script_serialize "${stack[$i]}" )
         else
             read elem < <( script_serialize "${stack[$i]}" )
@@ -220,6 +219,7 @@ tx_bip141_serwitness()
 
     read stacksize < <( data_compsize $((${#serstack[@]}*2)) )
     printf '%s' ${stacksize} ${serstack[@]}
+    echo
 }
 
 _tx_bip141_serwitness ()

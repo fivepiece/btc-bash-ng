@@ -98,7 +98,7 @@ script_serialize ()
 { 
     local -a script
     read -r -a script <<<"${@}"
-    local pushdata serdata pushnum hextext ser=""
+    local elem pushdata serdata pushnum hextext ser=""
 
     for ((i=0; i<${#script[@]}; i++ )); do
         
