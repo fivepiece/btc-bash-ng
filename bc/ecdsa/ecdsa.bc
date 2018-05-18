@@ -47,59 +47,6 @@ define void ecdsa_sign_recoverable(k, z, d, compr, *sig[]){
     sig[3] = compresspoint_api(r_pt[0], r_pt[1]);
 }
 
-define ecdsa_sig2der(r, s){
-
-    auto lenr, bigr, lens, bigs, dersig, siglen;
-
-    lenr = bytelen(r);
-    lens = bytelen(s);
-
-    if ( r > 7F && (r / (100 ^ (lenr - 1)) > 7F) ){
-        bigr = 1;
-    }
-    if ( s > 7F && (s / (100 ^ (lens - 1)) > 7F) ){
-        bigs = 1;
-    }
-    siglen = 2 + bigr + lenr + 2 + bigs + lens;
-    dersig = 3000 + siglen;
-    dersig *= 100;
-    dersig += 02;
-    dersig *= 100;
-    dersig += bigr + lenr;
-    if (bigr == 1){
-        dersig *= 100;
-    }
-    dersig *= 10 ^ (lenr * 2);
-    dersig += r;
-    dersig *= 100;
-    dersig += 02
-    dersig *= 100;
-    dersig += bigs + lens;
-    if (bigs == 1){
-        dersig *= 100;
-    }
-    dersig *= 10 ^ (lens * 2);
-    dersig += s;
-
-    return dersig;
-}
-
-define void ecdsa_der2sig(dersig, *sig[]){
-
-    auto lensig, lenr, r, lens, s, tmp;
-
-    lensig = dersig / (100 ^ (bytelen(dersig) - 2)) % 100;
-    if (lensig < bytelen(derisg) + 2){
-        dersig /= 100;
-    }
-    lenr = dersig / (100 ^ (lensig - 2)) % 100;
-    lens = dersig / (100 ^ (lensig - 2 - lenr - 2)) % 100;
-
-    sig[1] = dersig % (100 ^ lens);
-    dersig /= (100 ^ (lens + 2));
-    sig[0] = dersig % (100 ^ lenr);
-}
-
 define ecdsa_sign_der(k, z, d){
 
     auto raw_sig[], lenr, bigr, lens, dersig, siglen;
