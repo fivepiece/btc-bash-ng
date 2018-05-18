@@ -197,6 +197,14 @@ define void uncompresspoint_api(x, *point[])
 {
     auto tmp[];
 
+    if ( x < 0 ) {
+        if ( x < (10 ^ curve_words)*3 ) {
+            x = (-x) - (10 ^ curve_words);
+        } else if ( x < (10 ^ curve_words)*2 ) {
+            x = (-x) + (10 ^ curve_words);
+        }
+    }
+
     gety_api(( mod(x, 10 ^ curve_words) ), tmp[]);
 
     if ( x > ( 3*(10 ^ curve_words) ) ) {
