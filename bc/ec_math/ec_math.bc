@@ -44,7 +44,7 @@ define void ecdouble(p)
     auto pt[], ret[];
 
     uncompresspoint_api(p, pt[]);
-    if ( !ispoint_api(pt[]) ){
+    if ( !ispoint(pt[]) ){
         print "\n ### Not a point\n";
         return;
     }
@@ -175,4 +175,26 @@ define ecmul(d)
     auto ret[];
     ecmul_api(d, curve_gx, curve_gy, curve_n, curve_p, ret[]);
     return compresspoint(ret[]);
+}
+
+define ecmul_pt(d, pt)
+{
+    auto uncompr_pt[], mul_ret[];
+
+    uncompresspoint_api(pt, uncompr_pt[]);
+    ecmul_api(d, uncompr_pt[0], uncompr_pt[1], curve_n, curve_p, mul_ret[]);
+    print "0";
+    return compresspoint_api(mul_ret[0], mul_ret[1]);
+}
+
+# NOT a secure random number
+define rand()
+{
+    auto rnd;
+
+    rnd = 1;
+    for (i=0; i<(curve_words + 1); i++) {
+        rnd = rnd * random();
+    }
+    return mod(rnd, curve_n)
 }

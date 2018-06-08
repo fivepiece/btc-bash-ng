@@ -156,7 +156,7 @@ define ispoint_api(x, y, a, b, p)
     return (ans == 0);
 }
 
-define ispoint(pt[])
+define ispoint(*pt[])
 {
     return ispoint_api(pt[0], pt[1], curve_a, curve_b, curve_p);
 }
